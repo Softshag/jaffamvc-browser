@@ -33,8 +33,12 @@
   }
 }(this, function(Backbone, co) {
 
-
   "use strict";
+
+  var JaffaMVC = {};
+
+  JaffaMVC.version = "0.0.1";
+
 
   var _get = function get(object, property, receiver) {
     var desc = Object.getOwnPropertyDescriptor(object, property);
@@ -86,13 +90,13 @@
    * JaffaMVC
    * @namespace JaffaMVC
    */
-  var JaffaMVC = {
+  Object.assign(JaffaMVC, {
     Events: Backbone.Events,
     History: Backbone.History,
     Model: Backbone.Model,
     Collection: Backbone.Collection,
     Router: Backbone.Router
-  };
+  });
 
   /** Error classes */
 
@@ -1299,6 +1303,7 @@
   }
 
   //
+
   var proxyties = ["addRegions", "addRegion", "removeRegion", "removeRegions"];
 
   var RegionManager = (function(BaseClass) {

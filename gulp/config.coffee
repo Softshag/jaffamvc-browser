@@ -21,7 +21,7 @@ exports.files = [
   'src/application.js'
 ]
 
-exports.binary = info.name + "-" + info.version
+exports.binary = info.name #+ "-" + info.version
 
 exports.umd =
   header: (filename) ->

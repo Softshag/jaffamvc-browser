@@ -1,4 +1,5 @@
 /* global View, List */
+
 class CollectionView extends View {
 
   /**

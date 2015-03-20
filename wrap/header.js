@@ -20,3 +20,9 @@
     root.JaffaMVC = factory(root.Exoskeleton || root.Backbone, co);
   }
 }(this, function (Backbone, co) {
+
+  "use strict";
+
+  var JaffaMVC = {};
+
+  JaffaMVC.version = "<%= version %>";

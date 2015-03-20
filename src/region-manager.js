@@ -1,4 +1,5 @@
 /* global BaseClass, __has */
+
 let proxyties = [
 	'addRegions',
 	'addRegion',

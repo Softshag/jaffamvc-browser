@@ -1,5 +1,6 @@
 /* global BaseClass */
 /* jshint latedef:nofunc */
+
 class Region extends BaseClass {
 	/**
    * Build region from a definition
