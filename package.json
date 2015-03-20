@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node node_modules/.bin/gulp build",
     "test": "node node_modules/.bin/gulp test",
-    "lint": "node node_modules/.bin/jshint ."
+    "lint": "node node_modules/.bin/gulp lint"
   },
   "author": "",
   "license": "MIT",
