@@ -12,7 +12,7 @@ class Module extends BaseClass {
 	}
 
 	constructor (name, options, app) {
-		Object.assign(this,{options,name,app});
+		Object.assign(this, {options, name, app});
 		super()
 	}
 
@@ -85,6 +85,11 @@ class Module extends BaseClass {
 		for (var key in this.modules) {
 			this.removeModule(key);
 		}
+	}
+
+	destroy () {
+		this.removeAllModules();
+		super.destroy()
 	}
 
 	get initializer() {

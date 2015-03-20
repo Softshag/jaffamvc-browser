@@ -6,6 +6,7 @@ fs = require 'fs'
 exports.files = [
   'src/jaffamvc.js'
   'src/utils.js'
+  'src/ajax.js'
   'src/object.js'
   'src/list.js'
   'src/boot.js'

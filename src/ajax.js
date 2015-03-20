@@ -23,10 +23,10 @@ let ajax = function() {
     return e;
   };
 
-  var xmlRe = /^(?:application|text)\/xml/;
-  var jsonRe = /^application\/json/;
+  let xmlRe = /^(?:application|text)\/xml/;
+  let jsonRe = /^application\/json/;
 
-  var getData = function(accepts, xhr) {
+  let getData = function(accepts, xhr) {
     if (accepts == null) accepts = xhr.getResponseHeader('content-type');
     if (xmlRe.test(accepts)) {
       return xhr.responseXML;
@@ -66,7 +66,7 @@ let ajax = function() {
 
   return function(opts) {
     if (opts == null || !utils.isObject(opts)) throw new Error('no opts');
-    opts.type = opts.type || 'GET'
+    opts.type = (opts.type || 'GET').toUpperCase()
 
     let xhr = xmlrequest();
     if (xhr instanceof Error) throw xhr;
@@ -101,6 +101,10 @@ let ajax = function() {
     }
 
     xhr.addEventListener('readystatechange', end(xhr, opts, resolve, reject));
+    if (typeof opts.progress === 'function') {
+      xhr.addEventListener('progress', opts.progress)
+    }
+
     xhr.open(opts.type, opts.url, true);
 
     var allTypes = "*/".concat("*");
