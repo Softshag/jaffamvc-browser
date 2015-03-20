@@ -18,8 +18,8 @@ gulp.task 'build-es5', ->
   .pipe concat config.binary + '.js'
   .pipe babel()
   .pipe wrap config.umd
-  .pipe replace(/\*jshint\s+[-\w\d]+\s?\*/g, "")
-  .pipe replace(/\*global\s+[-\w\d,]+\s?\*/g, "")
+  .pipe replace(/\*\s?jshint\s+[-\w\d:]+\s*?\*/g, "")
+  .pipe replace(/\*\s?global\s+[-\w\d\s,]+\s*?\*/g, "")
   .pipe prettify
     js:
       indentSize: 2

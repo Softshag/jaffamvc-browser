@@ -705,7 +705,8 @@ class Module extends BaseClass {
     }
 }
 
-
+/* global BaseClass */
+/* jshint latedef:nofunc */
 class Region extends BaseClass {
     /**
      * Build region from a definition
@@ -838,7 +839,7 @@ function buildBySelector(selector, Klass) {
 
 }
 
-
+/* global BaseClass, __has */
 let proxyties = [
     'addRegions',
     'addRegion',
@@ -1048,6 +1049,7 @@ class NativeView extends BBView {
     // result of calling bound `listener` with the parameters given to the
     // handler.
     delegate(eventName, selector, listener) {
+        /*jslint eqeq: true*/
         if (typeof selector === 'function') {
             listener = selector;
             selector = null;
@@ -1113,7 +1115,7 @@ class NativeView extends BBView {
     }
 }
 
-
+/* global NativeView */
 
 class View extends NativeView {
     /**
@@ -1370,6 +1372,7 @@ class View extends NativeView {
     }
 
     normalizeUIKeys(obj) {
+        /*jshint -W030 */
         let reg = /@ui.([a-zA-Z_\-\$#]+)/i,
             o = {},
             k, v, ms, sel, ui;

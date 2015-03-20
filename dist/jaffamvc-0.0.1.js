@@ -626,7 +626,7 @@
     return Boot;
   })();
 
-  /* global BaseClass */
+  //
 
   var ChannelError = (function(JaffaError) {
     function ChannelError() {
@@ -802,7 +802,7 @@
 
   Object.assign(Channel.prototype, Commands, Request);
 
-  /*global BaseClass, Boot */
+  //
 
   var Module = (function(BaseClass) {
     function Module(name, options, app) {
@@ -993,6 +993,9 @@
     return Module;
   })(BaseClass);
 
+  //
+  //
+
   var Region = (function(BaseClass) {
 
     /**
@@ -1162,6 +1165,7 @@
     });
   }
 
+  //
   var proxyties = ["addRegions", "addRegion", "removeRegion", "removeRegions"];
 
   var RegionManager = (function(BaseClass) {
@@ -1440,6 +1444,7 @@
         // handler.
 
         value: function delegate(eventName, selector, listener) {
+          /*jslint eqeq: true*/
           if (typeof selector === "function") {
             listener = selector;
             selector = null;
@@ -1518,6 +1523,8 @@
 
     return NativeView;
   })(BBView);
+
+  //
 
   var View = (function(NativeView) {
     /**
@@ -1817,6 +1824,7 @@
       },
       normalizeUIKeys: {
         value: function normalizeUIKeys(obj) {
+          //
           var reg = /@ui.([a-zA-Z_\-\$#]+)/i,
             o = {},
             k = undefined,
@@ -1851,7 +1859,7 @@
     triggerMethod: utils.triggerMethod
   });
 
-  /*global View, RegionManager*/
+  //
 
   var LayoutView = (function(View) {
     /**
@@ -1927,7 +1935,7 @@
     return LayoutView;
   })(View);
 
-  /* global View, List */
+  //
 
   var CollectionView = (function(View) {
 
@@ -2417,7 +2425,7 @@
     return CollectionView;
   })(View);
 
-  /* global Module, RegionManager */
+  //
 
   var Application = (function(Module) {
     /**
