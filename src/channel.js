@@ -79,7 +79,7 @@ let Request = {
         fn = co.wrap(fn);
       }
 			let ret = fn.apply(ctx, __slice.call(arguments, 1));
-      if (utils.isPromise(ret)) {
+      if (ret && utils.isPromise(ret)) {
         return ret;
       } else if (ret instanceof Error) {
         ret = Promise.reject(ret);
