@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.4
+ * JaffaMVC.js 0.0.5
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -37,7 +37,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.4";
+  JaffaMVC.version = "0.0.5";
   JaffaMVC.Debug = false;
 
 
@@ -306,9 +306,10 @@
      * @memberof JaffaMVC.Utils
      */
     triggerMethod: function triggerMethod(event) {
-      var e = __camelCase("on-" + event.replace(/:/, "-")),
+      var e = __camelCase("on-" + event.replace(/:/g, "-")),
         m = utils.getOption.call(this, e),
         args = __slice.call(arguments, 1);
+
       utils.callFunction(this.trigger, this, __slice.call(arguments));
 
       if (typeof m === "function") {
@@ -1738,6 +1739,18 @@
     _inherits(View, NativeView);
 
     _prototypeProperties(View, null, {
+      isShown: {
+        get: function() {
+          return !!this._isShown;
+        },
+        configurable: true
+      },
+      isRendered: {
+        get: function() {
+          return !!this._isRendered;
+        },
+        configurable: true
+      },
       destroy: {
 
         /**
@@ -2142,9 +2155,15 @@
       this.once("render", this._initCollectionEvents);
 
       // when this view is shown, all child views should be shown also.
+      this.listenTo(this, "before:show", function() {
+        this.children.forEach(function(child) {
+          if (!child.isShown) utils.triggerMethodOn(child, "before:show");
+        });
+      });
+
       this.listenTo(this, "show", function() {
         this.children.forEach(function(child) {
-          utils.triggerMethodOn(child, "show");
+          if (!child.isShown) utils.triggerMethodOn(child, "show");
         });
       });
     }
@@ -2236,7 +2255,7 @@
         configurable: true
       },
       startBuffering: {
-
+        // Buffering
         /**
          * When inserting a batch of models, this method should be called first,
          * to optimise perfomance
@@ -2259,17 +2278,37 @@
          */
 
         value: function stopBuffering() {
-          var _this16 = this;
-
           this._isBuffering = false;
+
+          this._triggerBeforeShowBufferedChildren();
+
           this._container.appendChild(this._buffer);
 
-          this._bufferedChildren.forEach(function(item) {
-            _this16.children.add(item);
-            if (_this16._isShown) utils.triggerMethodOn(item, "show");
-          });
+          this._triggerShowBufferedChildren();
 
           delete this._bufferedChildren;
+        },
+        writable: true,
+        configurable: true
+      },
+      _triggerBeforeShowBufferedChildren: {
+        value: function _triggerBeforeShowBufferedChildren() {
+          if (this._isShown) {
+            this._bufferedChildren.forEach(function(item) {
+              if (!item._isShown) utils.triggerMethodOn(item, "before:show");
+            });
+          }
+        },
+        writable: true,
+        configurable: true
+      },
+      _triggerShowBufferedChildren: {
+        value: function _triggerShowBufferedChildren() {
+          if (this._isShown) {
+            this._bufferedChildren.forEach(function(item) {
+              if (!item._isShown) utils.triggerMethodOn(item, "show");
+            });
+          }
         },
         writable: true,
         configurable: true
@@ -2308,7 +2347,6 @@
 
         value: function _attachHTML(view, index) {
           if (this._isBuffering) {
-            if (this._isShown) utils.triggerMethodOn(view, "before:show");
             this._buffer.appendChild(view.el);
             this._bufferedChildren.push(view);
           } else {
@@ -2347,6 +2385,16 @@
         configurable: true
       },
       _addChildView: {
+
+        /**
+         * Add childview to collection view
+         * @private
+         * @memberOf JaffaMVC.CollectionView#
+         * @method  _addChildView
+         * @param {JaffaMVC.View} view  A view
+         * @param {Number} index index
+         */
+
         value: function _addChildView(view, index) {
 
           this._updateIndexes(view, true, index);
@@ -2356,10 +2404,6 @@
           this.children.add(view);
 
           this.renderChildView(view, index);
-
-          if (this._isShown && !this._isBuffering) {
-            utils.triggerMethodOn(view, "show");
-          }
 
           this.triggerMethod("add:child", view);
         },
@@ -2371,10 +2415,13 @@
         /**
          * Proxy event froms childview to the collectionview
          * @param {JaffaMVC.View} view
+         * @private
+         * @method  _proxyChildViewEvents
+         * @memberOf JaffaMVC.CollectionView#
          */
 
         value: function proxyChildViewEvents(view) {
-          var prefix = "childview";
+          var prefix = this.getOption("prefix") || "childview";
 
           this.listenTo(view, "all", function() {
             var args = __slice.call(arguments);
@@ -2382,7 +2429,7 @@
             args[0] = prefix + ":" + args[0];
             args.splice(1, 0, view);
 
-            this.triggerMethod.apply(this, args);
+            utils.callFunction(this.triggerMethod, this, args);
           });
         },
         writable: true,

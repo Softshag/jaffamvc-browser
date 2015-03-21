@@ -2,6 +2,8 @@
 
 
 class View extends NativeView {
+  get isShown () { return !!this._isShown; }
+  get isRendered () { return !!this._isRendered; }
   /**
    * Base View
    * @param {Object}            [options]           Options See Backbone.View for additonal arguments

@@ -28,9 +28,15 @@ class CollectionView extends View {
     this.once('render', this._initCollectionEvents);
 
     // when this view is shown, all child views should be shown also.
+    this.listenTo(this, 'before:show', function () {
+      this.children.forEach(function (child) {
+        if (!child.isShown) utils.triggerMethodOn(child, 'before:show');
+      });
+    });
+
     this.listenTo(this, 'show', function() {
       this.children.forEach(function(child) {
-        utils.triggerMethodOn(child, 'show');
+        if (!child.isShown) utils.triggerMethodOn(child, 'show');
       });
     });
 
@@ -103,7 +109,7 @@ class CollectionView extends View {
     this._updateIndexes(view, false)
 
   }
-
+  // Buffering
   /**
    * When inserting a batch of models, this method should be called first,
    * to optimise perfomance
@@ -121,15 +127,34 @@ class CollectionView extends View {
    */
   stopBuffering () {
     this._isBuffering = false;
+
+
+    this._triggerBeforeShowBufferedChildren();
+
     this._container.appendChild(this._buffer);
 
-    this._bufferedChildren.forEach((item) => {
-      this.children.add(item);
-      if (this._isShown)
-        utils.triggerMethodOn(item, 'show');
-    });
+    this._triggerShowBufferedChildren();
+
 
     delete this._bufferedChildren;
+  }
+
+  _triggerBeforeShowBufferedChildren () {
+    if (this._isShown) {
+      this._bufferedChildren.forEach((item) => {
+        if (!item._isShown)
+          utils.triggerMethodOn(item, 'before:show');
+      });
+    }
+  }
+
+  _triggerShowBufferedChildren () {
+    if (this._isShown) {
+      this._bufferedChildren.forEach((item) => {
+        if (!item._isShown)
+          utils.triggerMethodOn(item, 'show');
+      });
+    }
   }
 
   /**
@@ -158,8 +183,6 @@ class CollectionView extends View {
    */
   _attachHTML (view, index) {
     if (this._isBuffering) {
-      if (this._isShown)
-        utils.triggerMethodOn(view, 'before:show');
       this._buffer.appendChild(view.el);
       this._bufferedChildren.push(view);
     } else {
@@ -194,6 +217,14 @@ class CollectionView extends View {
   }
 
 
+  /**
+   * Add childview to collection view
+   * @private
+   * @memberOf JaffaMVC.CollectionView#
+   * @method  _addChildView
+   * @param {JaffaMVC.View} view  A view
+   * @param {Number} index index
+   */
   _addChildView (view, index) {
 
     this._updateIndexes(view, true, index);
@@ -204,10 +235,6 @@ class CollectionView extends View {
 
     this.renderChildView(view, index);
 
-    if (this._isShown && !this._isBuffering) {
-      utils.triggerMethodOn(view, 'show');
-    }
-
     this.triggerMethod('add:child', view);
 
   }
@@ -215,9 +242,12 @@ class CollectionView extends View {
   /**
    * Proxy event froms childview to the collectionview
    * @param {JaffaMVC.View} view
+   * @private
+   * @method  _proxyChildViewEvents
+   * @memberOf JaffaMVC.CollectionView#
    */
   proxyChildViewEvents (view) {
-    let prefix = 'childview';
+    let prefix = this.getOption('prefix') || 'childview';
 
     this.listenTo(view, 'all', function() {
       let args = __slice.call(arguments);
@@ -225,8 +255,7 @@ class CollectionView extends View {
       args[0] = prefix + ':' + args[0];
       args.splice(1, 0, view);
 
-      this.triggerMethod.apply(this, args);
-
+      utils.callFunction(this.triggerMethod, this, args);
     });
 
   }
