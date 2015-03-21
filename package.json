@@ -21,6 +21,7 @@
     "es6-shim": "^0.25.3",
     "gulp": "^3.8.11",
     "gulp-babel": "^4.0.0",
+    "gulp-bump": "^0.3.0",
     "gulp-concat": "^2.5.2",
     "gulp-jasmine-phantom": "^1.1.2",
     "gulp-jsbeautifier": "0.0.4",

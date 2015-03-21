@@ -4,8 +4,9 @@ rename = require 'gulp-rename'
 config = require '../config'
 
 gulp.task 'uglify', ->
-  console.log './dist/*.js'
-  gulp.src './dist/*'
-  .pipe uglify()
+
+  gulp.src './dist/' + config.binary + '.js'
+  .pipe uglify
+    preserveComments: 'some'
   .pipe rename extname: '.min.js'
   .pipe gulp.dest './dist'

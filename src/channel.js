@@ -78,7 +78,7 @@ let Request = {
       if (utils.isGenerator(fn) || utils.isGeneratorFunction(fn)) {
         fn = co.wrap(fn);
       }
-			let ret = fn.apply(req.ctx, __slice.call(arguments, 1));
+			let ret = fn.apply(ctx, __slice.call(arguments, 1));
       if (utils.isPromise(ret)) {
         return ret;
       } else if (ret instanceof Error) {
@@ -88,7 +88,6 @@ let Request = {
       }
       return ret;
  		} else {
-			// FIXME: Fix error handeling
 			return Promise.reject(new ChannelError("no handler for request: "+ req))
 		}
 	},

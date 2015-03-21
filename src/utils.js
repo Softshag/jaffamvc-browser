@@ -149,7 +149,6 @@ let utils = {
     return type === 'function' || type === 'object' && !!obj;
 	},
 	result (obj, prop, ...args) {
-
 		if (typeof obj[prop] === 'function')
 			return obj[prop](...args);
 		return obj[prop];

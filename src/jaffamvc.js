@@ -50,6 +50,13 @@ JaffaMVC.$ = function (selector, context) {
   if (typeof selector !== 'string' && 'nodeType' in selector) {
     return [selector];
   }
+
+  if (typeof context === 'string') {
+    context = document.querySelectorAll(context);
+    if (!context.length) return context;
+    [context] = context;
+  }
+
   return context.querySelectorAll(selector);
 
 };

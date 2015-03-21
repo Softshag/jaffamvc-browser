@@ -40,6 +40,21 @@
   JaffaMVC.version = "0.0.1";
 
 
+  var _slicedToArray = function(arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      var _arr = [];
+      for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) {
+        _arr.push(_step.value);
+        if (i && _arr.length === i) break;
+      }
+      return _arr;
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+
   var _get = function get(object, property, receiver) {
     var desc = Object.getOwnPropertyDescriptor(object, property);
     if (desc === undefined) {
@@ -163,6 +178,17 @@
     if (typeof selector !== "string" && "nodeType" in selector) {
       return [selector];
     }
+
+    if (typeof context === "string") {
+      context = document.querySelectorAll(context);
+      if (!context.length) return context;
+      var _ref = context;
+
+      var _ref2 = _slicedToArray(_ref, 1);
+
+      context = _ref2[0];
+    }
+
     return context.querySelectorAll(selector);
   };
 
@@ -441,6 +467,7 @@
       }
 
       xhr.addEventListener("readystatechange", end(xhr, opts, resolve, reject));
+
       if (typeof opts.progress === "function") {
         xhr.addEventListener("progress", opts.progress);
       }
@@ -857,7 +884,7 @@
         if (utils.isGenerator(fn) || utils.isGeneratorFunction(fn)) {
           fn = co.wrap(fn);
         }
-        var ret = fn.apply(req.ctx, __slice.call(arguments, 1));
+        var ret = fn.apply(ctx, __slice.call(arguments, 1));
         if (utils.isPromise(ret)) {
           return ret;
         } else if (ret instanceof Error) {
@@ -867,7 +894,6 @@
         }
         return ret;
       } else {
-        // FIXME: Fix error handeling
         return Promise.reject(new ChannelError("no handler for request: " + req));
       }
     },

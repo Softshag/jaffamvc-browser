@@ -85,8 +85,8 @@ let ajax = function() {
 
     // Stringify GET query params.
     if (opts.type === 'GET' && typeof opts.data === 'object') {
-      var query = '';
-      var stringifyKeyValuePair = function(key, value) {
+      let query = '';
+      let stringifyKeyValuePair = function(key, value) {
         return value == null ? '' :
           '&' + encodeURIComponent(key) +
           '=' + encodeURIComponent(value);
@@ -96,12 +96,13 @@ let ajax = function() {
       }
 
       if (query) {
-        var sep = (opts.url.indexOf('?') === -1) ? '?' : '&';
+        let sep = (opts.url.indexOf('?') === -1) ? '?' : '&';
         opts.url += sep + query.substring(1);
       }
     }
 
     xhr.addEventListener('readystatechange', end(xhr, opts, resolve, reject));
+
     if (typeof opts.progress === 'function') {
       xhr.addEventListener('progress', opts.progress)
     }
@@ -131,8 +132,6 @@ let ajax = function() {
     xhr.send(opts.data);
 
     return promise;
-
-
   }
 
 };
