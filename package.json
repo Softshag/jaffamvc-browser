@@ -2,7 +2,7 @@
   "name": "jaffamvc",
   "version": "0.0.6",
   "description": "",
-  "main": "index.js",
+  "main": "dist/jaffamvc.js",
   "scripts": {
     "build": "node node_modules/.bin/gulp build",
     "test": "node node_modules/.bin/gulp test",
@@ -44,7 +44,6 @@
   },
   "pre-commit": [
     "lint",
-    "build",
     "test"
   ]
 }
