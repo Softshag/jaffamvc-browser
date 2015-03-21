@@ -6,7 +6,7 @@ var __camelCase = function(input) {
 };
 
 let __slice = Array.prototype.slice;
-
+let __has = Object.prototype.hasOwnProperty;
 let utils = {
 	callFunction: function(fn, ctx, args) {
 		switch (args.length) {
@@ -154,4 +154,13 @@ let utils = {
 		return obj[prop];
 	}
 
+}
+
+
+function debug () {
+  if (JaffaMVC.Debug !== true) return;
+
+  return 'object' === typeof console
+    && console.log
+    && Function.prototype.apply.call(console.log, console, arguments);
 }

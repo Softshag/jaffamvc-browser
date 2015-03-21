@@ -48,6 +48,11 @@ class Region extends BaseClass {
     if (diff) {
       // If the view is destroyed be others
       view.once('destroy', this.empty, this);
+
+      view.once('render', () => {
+        utils.triggerMethodOn(view, 'show');
+      });
+
       view.render();
 
       utils.triggerMethodOn(view, 'before:show');
@@ -55,8 +60,6 @@ class Region extends BaseClass {
       this._attachHtml(view);
 
       this.currentView = view;
-
-      utils.triggerMethodOn(view, 'show');
 
     }
 

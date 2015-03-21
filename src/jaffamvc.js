@@ -40,7 +40,7 @@ let domReady = (function (f) {
   }
 })();
 
-JaffaMVC.$ = function (selector, context) {
+JaffaMVC.$ = function Query (selector, context) {
 
   if (typeof selector === 'function') {
     return domReady(selector);

@@ -1,4 +1,5 @@
-/* global NativeView */
+/* global NativeView, Backbone, debug */
+
 
 class View extends NativeView {
   /**
@@ -48,7 +49,7 @@ class View extends NativeView {
     this.isDestroyed = true;
 
     this.triggerMethod('destroy', args);
-    //_log('view destroy:',this);
+    debug('view destroy:', this);
 
     this.remove();
 
@@ -69,7 +70,7 @@ class View extends NativeView {
 
     var template = this.getOption('template');
 
-    if (template) {
+    if (template != null) {
       this._renderTemplate(template).then((templ) => {
         this.el.innerHTML = templ;
         this.delegateEvents();

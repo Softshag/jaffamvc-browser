@@ -81,6 +81,10 @@ describe('Collection View', function() {
 
       view.render();
     });
+
+    it('should behave...', function() {
+
+    });
   });
 
 });

@@ -1,11 +1,11 @@
 /*!
- * JaffaMVC.js 0.0.1
+ * JaffaMVC.js 0.0.4
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
+ * (c) 2014 Adam Krebs, Jimmy Yuen Ho Wong
  * JaffaMVC may be freely distributed under the MIT license.
  */
-
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['backbone', 'co'], factory);
@@ -16,17 +16,17 @@
     try {
       backbone = require('exoskeleton');
     } catch (e) {
-      err = e;
+      try {
+        backbone = require('backbone');
+      } catch (e) {
+        err = e;
+      }
     }
-    try {
-      backbone = require('backbone');
-    } catch (e) {
-      err = e;
-    }
+
     try {
       co = require('co')
     } catch (e) {}
-    if (Backbone === null) throw err;
+    if (backbone === null) throw err;
     module.exports = factory(backbone, co);
   } else {
     root.JaffaMVC = factory(root.Exoskeleton || root.Backbone, co);
@@ -37,7 +37,8 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.1";
+  JaffaMVC.version = "0.0.4";
+  JaffaMVC.Debug = false;
 
 
   var _slicedToArray = function(arr, i) {
@@ -168,7 +169,7 @@
     };
   })();
 
-  JaffaMVC.$ = function(selector, context) {
+  JaffaMVC.$ = function Query(selector, context) {
 
     if (typeof selector === "function") {
       return domReady(selector);
@@ -181,7 +182,9 @@
 
     if (typeof context === "string") {
       context = document.querySelectorAll(context);
-      if (!context.length) return context;
+      if (!context.length) {
+        return context;
+      }
       var _ref = context;
 
       var _ref2 = _slicedToArray(_ref, 1);
@@ -199,7 +202,7 @@
   };
 
   var __slice = Array.prototype.slice;
-
+  var __has = Object.prototype.hasOwnProperty;
   var utils = {
     callFunction: function callFunction(fn, ctx, args) {
       switch (args.length) {
@@ -368,6 +371,13 @@
     }
 
   };
+
+  function debug() {
+    if (JaffaMVC.Debug !== true) {
+      return;
+    }
+    return "object" === typeof console && console.log && Function.prototype.apply.call(console.log, console, arguments);
+  }
 
   var ajax = function ajax() {
 
@@ -1223,6 +1233,11 @@
           if (diff) {
             // If the view is destroyed be others
             view.once("destroy", this.empty, this);
+
+            view.once("render", function() {
+              utils.triggerMethodOn(view, "show");
+            });
+
             view.render();
 
             utils.triggerMethodOn(view, "before:show");
@@ -1230,8 +1245,6 @@
             this._attachHtml(view);
 
             this.currentView = view;
-
-            utils.triggerMethodOn(view, "show");
           }
 
           return this;
@@ -1746,7 +1759,7 @@
           this.isDestroyed = true;
 
           this.triggerMethod("destroy", args);
-          //_log('view destroy:',this);
+          debug("view destroy:", this);
 
           this.remove();
 
@@ -1773,7 +1786,7 @@
 
           var template = this.getOption("template");
 
-          if (template) {
+          if (template != null) {
             this._renderTemplate(template).then(function(templ) {
               _this16.el.innerHTML = templ;
               _this16.delegateEvents();

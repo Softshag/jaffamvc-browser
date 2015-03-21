@@ -1,4 +1,5 @@
-
+JaffaMVC.Debug = true;
+//Backbone.$ = JaffaMVC.$ = $;
 JaffaMVC.$(function () {
 
   var app = new JaffaMVC.Application({
@@ -45,7 +46,6 @@ JaffaMVC.$(function () {
     }),
     events: {
       "click @ui.button": function () {
-        console.log(this.ui.button)
         this.ui.button.innerHTML = "TEST"
       }
     },
@@ -57,9 +57,11 @@ JaffaMVC.$(function () {
   app.regions.header.show(view);
 
 
-  var collection = new JaffaMVC.Collection([
+  var collection = new JaffaMVC.Collection();
+   collection.reset([
     {"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}
   ]);
+
 
 
   var collectionView = new JaffaMVC.CollectionView({
@@ -70,15 +72,24 @@ JaffaMVC.$(function () {
       },
       template: function (data) {
         return "<p>" + data.title + "</p>"
+      },
+      onShow: function () {
+        console.log('on show', this.model.get('title'))
       }
-    })
+     })
   });
 
   collectionView.on('childview:click', function () {
     console.log('child view was selected');
   });
 
+  setTimeout(function () {
+    app.regions.content.show(collectionView);
+  }, 1000)
 
-  app.regions.content.show(collectionView);
+  setTimeout(function () {
+    collection.add({title:"Title 4"})
+  }, 1200)
+
 
 });
