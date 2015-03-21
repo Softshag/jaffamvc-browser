@@ -456,8 +456,11 @@
           reject = rej;
         });
 
+      if (opts.headers == null) opts.headers = {};
+
+      opts.headers["X-Requested-With"] = "XMLHttpRequest";
+
       if (opts.contentType) {
-        if (opts.headers == null) opts.headers = {};
         opts.headers["Content-Type"] = opts.contentType;
       }
 
@@ -2826,7 +2829,7 @@
 
   Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;
 
-  Backbone.ajax = ajax;
+  Backbone.ajax = ajax();
 
   Object.assign(JaffaMVC, {
     Application: Application,

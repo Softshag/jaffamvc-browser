@@ -77,11 +77,15 @@ let ajax = function() {
       reject = rej;
     });
 
+    if (opts.headers == null) opts.headers = {};
+
+    opts.headers['X-Requested-With'] = 'XMLHttpRequest';
 
     if (opts.contentType) {
-      if (opts.headers == null) opts.headers = {};
       opts.headers['Content-Type'] = opts.contentType;
     }
+
+
 
     // Stringify GET query params.
     if (opts.type === 'GET' && typeof opts.data === 'object') {
