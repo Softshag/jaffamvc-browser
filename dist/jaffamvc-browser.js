@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.7
+ * JaffaMVC.js 0.0.9
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -37,7 +37,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.7";
+  JaffaMVC.version = "0.0.9";
   JaffaMVC.Debug = false;
 
 
@@ -620,6 +620,27 @@
             }
           }
           return null;
+        },
+        writable: true,
+        configurable: true
+      },
+      size: {
+        get: function() {
+          return this._items.size;
+        },
+        configurable: true
+      },
+      onEach: {
+        value: function onEach(fn) {
+          for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            args[_key - 1] = arguments[_key];
+          }
+
+          return this.forEach(function(item) {
+            if (item[fn] && typeof item[fn] === "function") {
+              utils.callFunction(item[fn], item, args);
+            }
+          });
         },
         writable: true,
         configurable: true
@@ -2456,7 +2477,7 @@
           if (this._container) {
             this._container.innerHtml = "";
           }
-          if (this.children.length === 0) {
+          if (this.children.size === 0) {
             return;
           }
           this.children.forEach(this.removeChildView, this);
@@ -2473,7 +2494,7 @@
         value: function _insertBefore(childView, index) {
           var currentView = undefined;
 
-          var findPosition = this.sort && index < this.children.length - 1;
+          var findPosition = this.sort && index < this.children.size - 1;
           if (findPosition) {
             // Find the view after this one
             currentView = this.children.find(function(view) {

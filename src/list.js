@@ -31,7 +31,7 @@ class List  {
     return null;
   }
 
-  size () { return this._items.size; }
+  get size () { return this._items.size; }
 
   onEach (fn, ...args) {
     return this.forEach( item => {
