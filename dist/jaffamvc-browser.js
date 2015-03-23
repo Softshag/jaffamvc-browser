@@ -503,6 +503,11 @@
           xhr.setRequestHeader(k, opts.headers[k]);
         }
       if (opts.beforeSend) opts.beforeSend(xhr);
+
+      if (opts.hasOwnProperty("withCredentials") && withCredentials in xhr) {
+        xhr.withCredentials = true;
+      }
+
       xhr.send(opts.data);
 
       return promise;
