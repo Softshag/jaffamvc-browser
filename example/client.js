@@ -9,29 +9,6 @@ JaffaMVC.$(function () {
     }
   });
 
-  app.addInitializer(function (options, done) {
-    setTimeout(function () {
-      console.log('init');
-      done();
-    }, 1000)
-
-  });
-
-  app.module('test', {
-    startWithParent: true,
-    initialize: function () {
-      console.log('module!');
-      this.addInitializer(this.init);
-    },
-    init: function () {
-      console.log('module initializer');
-    }
-  })
-
-  app.addInitializer(function () {
-    console.log('init 2')
-  })
-
   app.start();
 
   var view = new JaffaMVC.View({
@@ -57,10 +34,9 @@ JaffaMVC.$(function () {
   app.regions.header.show(view);
 
 
-  var collection = new JaffaMVC.Collection();
-   collection.reset([
-    {"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}
-  ]);
+  var collection = new JaffaMVC.Collection([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}]);
+
+
 
 
 
@@ -81,15 +57,19 @@ JaffaMVC.$(function () {
 
   collectionView.on('childview:click', function () {
     console.log('child view was selected');
+    collection.reset([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}])
   });
 
+
+  app.regions.content.show(collectionView);
+  /*
   setTimeout(function () {
     app.regions.content.show(collectionView);
   }, 1000)
 
   setTimeout(function () {
     collection.add({title:"Title 4"})
-  }, 1200)
+  }, 1200)*/
 
 
 });

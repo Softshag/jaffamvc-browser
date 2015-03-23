@@ -1,65 +1,49 @@
 
-class List {
-  /**
-   * Simple list implemntation
-   */
-  constructor (options={}) {
-    this.options = options;
-		this._items = [];
-		this.length = 0;
-		this.onRemove = options.onRemove || this.onRemove;
-		this.onAdd = options.onAdd || this.onAdd;
-  }
 
-  /**
-   * Checks if the list has an object
-   * @param {Mixed} item
-   * @return {Boolean}
-   */
-  has (item) {
-    /*jslint bitwise: true */
-    return ~this._items.indexOf(item);
+class List  {
+  constructor () {
+    this._items = new Set();
   }
-
 
   add (item) {
-    if (!this.has(item)) {
-      this._items.push(item);
-      this._updateLength.call(this);
-      if (this.onAdd) this.onAdd(item);
-    }
+    this._items.add(item);
+    return this;
   }
 
-  remove (item) {
-    if (this.has(item)) {
-      this._items.splice(this._items.indexOf(item), 1);
-      this._updateLength.call(this);
-      if (this.onRemove) this.onRemove(item);
-    }
-
+  delete (item) {
+    this._items.delete(item);
+    return this;
   }
 
-  empty () {
-    this.forEach(this.remove, this);
-    this._items = [];
-    this._updateLength.call(this);
+  has (item) { return this._items.has(item); }
+
+  clear () {
+    this._items.clear();
+    return this;
   }
 
   find (fn, ctx) {
-    let item;
-    for (var i = 0; i < this._items.length; i++ ) {
-      item = this._items[i];
+    ctx = ctx||this;
+    let found = null;
+    for (let item of this._items) {
       if (fn.call(ctx, item) === true) return item;
     }
     return null;
-
   }
+
+  size () { return this._items.size; }
+
+  onEach (fn, ...args) {
+    return this.forEach( item => {
+      if (item[fn] && typeof item[fn] === 'function') {
+        utils.callFunction(item[fn], item, args);
+      }
+    });
+  }
+
   forEach (fn, ctx) {
-    return this._items.forEach(fn, ctx);
+    this._items.forEach(fn, ctx);
+    return this;
   }
-
-  _updateLength () {
-		this.length = this._items.length;
-	}
 
 }

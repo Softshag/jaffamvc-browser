@@ -94,6 +94,7 @@ class CollectionView extends View {
   }
 
   removeChildView (view) {
+
     if (!view) return;
 
     if (typeof view.destroy === 'function') {
@@ -104,7 +105,7 @@ class CollectionView extends View {
     }
 
     this.stopListening(view);
-    this.children.remove(view);
+    this.children.delete(view);
 
     this._updateIndexes(view, false)
 
@@ -288,12 +289,16 @@ class CollectionView extends View {
    * Destroy all children of the collection view
    */
   destroyChildren () {
+
     if (this._container) {
       this._container.innerHtml = '';
+
     }
+    if (this.children.length === 0) return;
 
     this.children.forEach(this.removeChildView, this);
-    this.children.empty();
+    this.children.clear();
+
   }
 
   // Internal method. Check whether we need to insert the view into

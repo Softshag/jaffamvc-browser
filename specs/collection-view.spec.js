@@ -28,7 +28,7 @@ describe('Collection View', function() {
 
 
       view.on('render:children', function() {
-        expect(view.children.length).toEqual(3);
+        expect(view.children.size).toEqual(3);
         setTimeout(function() {
           expect(view.el.children.length).toEqual(3);
           done();

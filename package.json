@@ -2,7 +2,7 @@
   "name": "jaffamvc-browser",
   "version": "0.0.7",
   "description": "",
-  "main": "dist/jaffamvc.js",
+  "main": "dist/jaffamvc-browser.js",
   "scripts": {
     "build": "node node_modules/.bin/gulp build",
     "test": "node node_modules/.bin/gulp test",

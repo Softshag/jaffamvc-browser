@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.6
+ * JaffaMVC.js 0.0.7
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -37,7 +37,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.6";
+  JaffaMVC.version = "0.0.7";
   JaffaMVC.Debug = false;
 
 
@@ -570,74 +570,51 @@
   });
 
   var List = (function() {
-    /**
-     * Simple list implemntation
-     */
-
     function List() {
-      var options = arguments[0] === undefined ? {} : arguments[0];
-
       _classCallCheck(this, List);
 
-      this.options = options;
-      this._items = [];
-      this.length = 0;
-      this.onRemove = options.onRemove || this.onRemove;
-      this.onAdd = options.onAdd || this.onAdd;
+      this._items = new Set();
     }
 
     _prototypeProperties(List, null, {
-      has: {
-
-        /**
-         * Checks if the list has an object
-         * @param {Mixed} item
-         * @return {Boolean}
-         */
-
-        value: function has(item) {
-          /*jslint bitwise: true */
-          return ~this._items.indexOf(item);
-        },
-        writable: true,
-        configurable: true
-      },
       add: {
         value: function add(item) {
-          if (!this.has(item)) {
-            this._items.push(item);
-            this._updateLength.call(this);
-            if (this.onAdd) this.onAdd(item);
-          }
+          this._items.add(item);
+          return this;
         },
         writable: true,
         configurable: true
       },
-      remove: {
-        value: function remove(item) {
-          if (this.has(item)) {
-            this._items.splice(this._items.indexOf(item), 1);
-            this._updateLength.call(this);
-            if (this.onRemove) this.onRemove(item);
-          }
+      "delete": {
+        value: function _delete(item) {
+          this._items["delete"](item);
+          return this;
         },
         writable: true,
         configurable: true
       },
-      empty: {
-        value: function empty() {
-          this.forEach(this.remove, this);
-          this._items = [];
-          this._updateLength.call(this);
+      has: {
+        value: function has(item) {
+          return this._items.has(item);
+        },
+        writable: true,
+        configurable: true
+      },
+      clear: {
+        value: function clear() {
+          this._items.clear();
+          return this;
         },
         writable: true,
         configurable: true
       },
       find: {
         value: function find(fn, ctx) {
-          var item = undefined;
-          for (var i = 0; i < this._items.length; i++) {
-            item = this._items[i];
+          ctx = ctx || this;
+          var found = null;
+          for (var _iterator = this._items[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) {
+            var item = _step.value;
+
             if (fn.call(ctx, item) === true) {
               return item;
             }
@@ -649,14 +626,8 @@
       },
       forEach: {
         value: function forEach(fn, ctx) {
-          return this._items.forEach(fn, ctx);
-        },
-        writable: true,
-        configurable: true
-      },
-      _updateLength: {
-        value: function _updateLength() {
-          this.length = this._items.length;
+          this._items.forEach(fn, ctx);
+          return this;
         },
         writable: true,
         configurable: true
@@ -899,7 +870,7 @@
           fn = co.wrap(fn);
         }
         var ret = fn.apply(ctx, __slice.call(arguments, 1));
-        if (utils.isPromise(ret)) {
+        if (ret && utils.isPromise(ret)) {
           return ret;
         } else if (ret instanceof Error) {
           ret = Promise.reject(ret);
@@ -2240,6 +2211,7 @@
       },
       removeChildView: {
         value: function removeChildView(view) {
+
           if (!view) {
             return;
           }
@@ -2250,7 +2222,7 @@
           }
 
           this.stopListening(view);
-          this.children.remove(view);
+          this.children["delete"](view);
 
           this._updateIndexes(view, false);
         },
@@ -2480,12 +2452,15 @@
          */
 
         value: function destroyChildren() {
+
           if (this._container) {
             this._container.innerHtml = "";
           }
-
+          if (this.children.length === 0) {
+            return;
+          }
           this.children.forEach(this.removeChildView, this);
-          this.children.empty();
+          this.children.clear();
         },
         writable: true,
         configurable: true
