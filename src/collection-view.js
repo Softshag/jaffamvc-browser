@@ -294,7 +294,7 @@ class CollectionView extends View {
       this._container.innerHtml = '';
 
     }
-    if (this.children.length === 0) return;
+    if (this.children.size === 0) return;
 
     this.children.forEach(this.removeChildView, this);
     this.children.clear();
@@ -306,7 +306,7 @@ class CollectionView extends View {
   _insertBefore (childView, index) {
     let currentView;
 
-    let findPosition = this.sort && (index < this.children.length - 1);
+    let findPosition = this.sort && (index < this.children.size - 1);
     if (findPosition) {
       // Find the view after this one
       currentView = this.children.find(function(view) {

@@ -34,7 +34,10 @@ JaffaMVC.$(function () {
   app.regions.header.show(view);
 
 
-  var collection = new JaffaMVC.Collection([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}]);
+  var Collection = JaffaMVC.Collection.extend({
+    url: 'test.json'
+  });
+  var collection = new Collection([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}]);
 
 
 
@@ -57,7 +60,8 @@ JaffaMVC.$(function () {
 
   collectionView.on('childview:click', function () {
     console.log('child view was selected');
-    collection.reset([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}])
+    collection.fetch();
+    //collection.reset([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}])
   });
 
 
