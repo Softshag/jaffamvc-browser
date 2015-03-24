@@ -134,7 +134,7 @@ let ajax = function() {
       }
     if (opts.beforeSend) opts.beforeSend(xhr);
 
-    if (opts.hasOwnProperty('withCredentials') && 'withCredentials' in xhr) {
+    if (opts.withCredentials) {
       xhr.withCredentials = true;
     }
 
