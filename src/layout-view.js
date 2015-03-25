@@ -1,4 +1,4 @@
-/*global View, RegionManager*/
+/*global View, RegionManager, Region*/
 
 class LayoutView extends View {
   /**
@@ -38,7 +38,7 @@ class LayoutView extends View {
 			if (!elm.length)
 				throw new Error('element must exists in dom');
 
-			def = new JaffaMVC.Region({
+			def = new Region({
 				el: elm[0]
 			});
 

@@ -63,8 +63,6 @@ let ajax = function() {
     }
   };
 
-
-
   return function(opts) {
     if (opts == null || !utils.isObject(opts)) throw new Error('no opts');
     opts.type = (opts.type || 'GET').toUpperCase()
@@ -84,8 +82,6 @@ let ajax = function() {
     if (opts.contentType) {
       opts.headers['Content-Type'] = opts.contentType;
     }
-
-
 
     // Stringify GET query params.
     if (opts.type === 'GET' && typeof opts.data === 'object') {

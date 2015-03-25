@@ -91,6 +91,29 @@ class NativeView extends BBView {
     }
   }
 
+  delegateEvents (events) {
+    if (!(events || (events = utils.result(this, 'events')))) return this;
+    this.undelegateEvents();
+
+    let dels = []
+    for (let key in events) {
+      let method = events[key];
+      if (typeof method !== 'function') method = this[events[key]];
+
+      let match = key.match(/^(\S+)\s*(.*)$/);
+      // Set delegates immediately and defer event on this.el
+      if (match[2]) {
+        this.delegate(match[1], match[2], method.bind(this));
+      } else {
+        dels.push([match[1], method.bind(this)]);
+      }
+    }
+
+    dels.forEach( d => { this.delegate(d[0],d[1]) });
+
+    return this;
+  }
+
   // Make a event delegation handler for the given `eventName` and `selector`
   // and attach it to `this.el`.
   // If selector is empty, the listener will be bound to `this.el`. If not, a
@@ -115,7 +138,10 @@ class NativeView extends BBView {
           listener(e);
         }
       }
-    } : listener;
+    } : function (e) {
+      if (e.delegateTarget) return;
+      listener(e);
+    };
 
     elementAddEventListener.call(this.el, eventName, handler, false);
     this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});

@@ -1,5 +1,6 @@
 JaffaMVC.Debug = true;
 //Backbone.$ = JaffaMVC.$ = $;
+var html = '<div style="height:100px;background-color:red;"><button class="button">OK</button></div>';
 JaffaMVC.$(function () {
 
   var app = new JaffaMVC.Application({
@@ -13,7 +14,7 @@ JaffaMVC.$(function () {
 
   var view = new JaffaMVC.View({
     template: function (data) {
-        return "<p>"+data.title+"<button class=\"button\">ok</button></p>"
+        return html + data.title
     },
     ui: {
       button: '.button'
@@ -22,6 +23,9 @@ JaffaMVC.$(function () {
       title: 'Test title'
     }),
     events: {
+      'click': function () {
+        console.log('click on div')
+      },
       "click @ui.button": function () {
         this.ui.button.innerHTML = "TEST"
       }
@@ -60,7 +64,7 @@ JaffaMVC.$(function () {
 
   collectionView.on('childview:click', function () {
     console.log('child view was selected');
-    collection.fetch();
+    //collection.fetch();
     //collection.reset([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}])
   });
 

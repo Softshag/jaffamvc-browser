@@ -1,5 +1,5 @@
 
-  Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;
+  /*Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;*/
 
   Backbone.ajax = ajax();
 
@@ -16,7 +16,7 @@
     Object: BaseClass,
     utils: utils,
     NativeView: NativeView
-  })
+  });
 
   return JaffaMVC;
 

@@ -68,8 +68,6 @@ class View extends NativeView {
 
     this.triggerMethod('before:render', this);
 
-    this.undelegateEvents();
-
     var template = this.getOption('template');
 
     if (template != null) {
@@ -94,7 +92,8 @@ class View extends NativeView {
    * @method getTemplateData
    */
   getTemplateData() {
-    return this.model ? this.model.toJSON() : {};
+    return (this.model && typeof this.model.toJSON === 'function') ?
+      this.model.toJSON() : {};
   }
 
   /**
@@ -202,20 +201,19 @@ class View extends NativeView {
   /* UI Elements */
   bindUIElements() {
 
-    var ui = this.getOption('ui');
+    let ui = this.getOption('ui');
     if (!ui) return;
 
     if (!this._ui) {
       this._ui = ui;
     }
 
-    ui = JaffaMVC.utils.result(this, '_ui');
+    ui = utils.result(this, '_ui');
 
     this.ui = {};
 
-
     Object.keys(ui).forEach( (k) => {
-      var elm = this.$(ui[k]);
+      let elm = this.$(ui[k]);
       if (elm && elm.length) {
         // unwrap if it's a nodelist.
         if (elm instanceof NodeList) {
@@ -224,17 +222,10 @@ class View extends NativeView {
         this.ui[k] = elm;
       }
     });
-    this.ui = this.ui;
 
   }
 
   unbindUIElements() {
-
-    /*if (!this.ui || !this._ui) return;
-
-    this.ui = this._ui;
-    delete this._ui;*/
-
   }
 
   /**

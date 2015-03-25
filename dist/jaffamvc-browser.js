@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.11
+ * JaffaMVC.js 0.0.13
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -22,7 +22,6 @@
         err = e;
       }
     }
-
     try {
       co = require('co')
     } catch (e) {}
@@ -37,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.11";
+  JaffaMVC.version = "0.0.13";
   JaffaMVC.Debug = false;
 
 
@@ -56,30 +55,21 @@
     }
   };
 
-  var _get = function get(object, property, receiver) {
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-      if (parent === null) {
-        return undefined;
-      } else {
-        return get(parent, property, receiver);
+  var _createClass = (function() {
+    function defineProperties(target, props) {
+      for (var key in props) {
+        var prop = props[key];
+        prop.configurable = true;
+        if (prop.value) prop.writable = true;
       }
-    } else if ("value" in desc && desc.writable) {
-      return desc.value;
-    } else {
-      var getter = desc.get;
-      if (getter === undefined) {
-        return undefined;
-      }
-      return getter.call(receiver);
+      Object.defineProperties(target, props);
     }
-  };
-
-  var _prototypeProperties = function(child, staticProps, instanceProps) {
-    if (staticProps) Object.defineProperties(child, staticProps);
-    if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-  };
+    return function(Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  })();
 
   var _inherits = function(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -116,30 +106,30 @@
 
   /** Error classes */
 
-  var JaffaError = (function(Error) {
+  var JaffaError = (function(_Error) {
     function JaffaError() {
       _classCallCheck(this, JaffaError);
 
-      if (Error != null) {
-        Error.apply(this, arguments);
+      if (_Error != null) {
+        _Error.apply(this, arguments);
       }
     }
 
-    _inherits(JaffaError, Error);
+    _inherits(JaffaError, _Error);
 
     return JaffaError;
   })(Error);
 
-  var InitializerError = (function(JaffaError) {
+  var InitializerError = (function(_JaffaError) {
     function InitializerError() {
       _classCallCheck(this, InitializerError);
 
-      if (JaffaError != null) {
-        JaffaError.apply(this, arguments);
+      if (_JaffaError != null) {
+        _JaffaError.apply(this, arguments);
       }
     }
 
-    _inherits(InitializerError, JaffaError);
+    _inherits(InitializerError, _JaffaError);
 
     return InitializerError;
   })(JaffaError);
@@ -263,7 +253,7 @@
         next = undefined;
       return new Promise(function(resolve, reject) {
         var next = (function(_next) {
-          var _nextWrapper = function next() {
+          var _nextWrapper = function next(_x) {
             return _next.apply(this, arguments);
           };
 
@@ -531,43 +521,40 @@
       }
     }
 
-    _prototypeProperties(BaseClass, null, {
-      destroy: {
-        value: function destroy() {
-          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
+    BaseClass.prototype.destroy = function destroy() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
 
-          if (this.isDestroyed) {
-            return;
-          }
-          this.triggerMethod("before:destroy", args);
+      if (this.isDestroyed) {
+        return;
+      }
+      this.triggerMethod("before:destroy", args);
 
-          this._isDestroyed = true;
+      this._isDestroyed = true;
 
-          this.triggerMethod("destroy", args);
+      this.triggerMethod("destroy", args);
 
-          this.stopListening();
+      this.stopListening();
 
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
+      return this;
+    };
+
+    _createClass(BaseClass, {
       isDestroyed: {
         get: function() {
           if (this._isDestroyed == null) {
             this._isDestroyed = false;
           }
           return this._isDestroyed;
-        },
-        configurable: true
+        }
       }
     });
 
     return BaseClass;
   })();
 
+  BaseClass.extend = Backbone.extend;
   // Mixin events
   Object.assign(BaseClass.prototype, Backbone.Events, {
     getOption: utils.getOption,
@@ -581,82 +568,78 @@
       this._items = new Set();
     }
 
-    _prototypeProperties(List, null, {
-      add: {
-        value: function add(item) {
-          this._items.add(item);
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      "delete": {
-        value: function _delete(item) {
-          this._items["delete"](item);
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      has: {
-        value: function has(item) {
-          return this._items.has(item);
-        },
-        writable: true,
-        configurable: true
-      },
-      clear: {
-        value: function clear() {
-          this._items.clear();
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      find: {
-        value: function find(fn, ctx) {
-          ctx = ctx || this;
-          var found = null;
-          for (var _iterator = this._items[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) {
-            var item = _step.value;
+    List.prototype.add = function add(item) {
+      this._items.add(item);
+      return this;
+    };
 
-            if (fn.call(ctx, item) === true) {
-              return item;
-            }
+    List.prototype["delete"] = function _delete(item) {
+      this._items["delete"](item);
+      return this;
+    };
+
+    List.prototype.has = function has(item) {
+      return this._items.has(item);
+    };
+
+    List.prototype.clear = function clear() {
+      this._items.clear();
+      return this;
+    };
+
+    List.prototype.find = function find(fn, ctx) {
+      ctx = ctx || this;
+      var found = null;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this._items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var item = _step.value;
+
+          if (fn.call(ctx, item) === true) return item;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"]) {
+            _iterator["return"]();
           }
-          return null;
-        },
-        writable: true,
-        configurable: true
-      },
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return null;
+    };
+
+    List.prototype.onEach = function onEach(fn) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      return this.forEach(function(item) {
+        if (item[fn] && typeof item[fn] === "function") {
+          utils.callFunction(item[fn], item, args);
+        }
+      });
+    };
+
+    List.prototype.forEach = function forEach(fn, ctx) {
+      this._items.forEach(fn, ctx);
+      return this;
+    };
+
+    _createClass(List, {
       size: {
         get: function() {
           return this._items.size;
-        },
-        configurable: true
-      },
-      onEach: {
-        value: function onEach(fn) {
-          for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            args[_key - 1] = arguments[_key];
-          }
-
-          return this.forEach(function(item) {
-            if (item[fn] && typeof item[fn] === "function") {
-              utils.callFunction(item[fn], item, args);
-            }
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      forEach: {
-        value: function forEach(fn, ctx) {
-          this._items.forEach(fn, ctx);
-          return this;
-        },
-        writable: true,
-        configurable: true
+        }
       }
     });
 
@@ -677,105 +660,89 @@
       this._initialized = false;
     }
 
-    _prototypeProperties(Boot, null, {
-      phase: {
+    /**
+     * Add new phase to the booter
+     * @param  {String} [name]
+     * @param  {Function} fn
+     * @param  {Object} [ctx]
+     * @return {JaffaMVC.Boot}
+     *
+     * @memberOf JaffaMVC.Boot#
+     * @method phase
+     */
 
-        /**
-         * Add new phase to the booter
-         * @param  {String} [name]
-         * @param  {Function} fn
-         * @param  {Object} [ctx]
-         * @return {JaffaMVC.Boot}
-         *
-         * @memberOf JaffaMVC.Boot#
-         * @method phase
-         */
+    Boot.prototype.phase = function phase(name, fn, ctx) {
+      if (typeof name === "function") {
+        fn = name;
+        name = fn.name || "unamed";
+      }
 
-        value: function phase(name, fn, ctx) {
-          if (typeof name === "function") {
-            fn = name;
-            name = fn.name || "unamed";
-          }
+      var p = {
+        n: name,
+        fn: fn,
+        ctx: ctx || this
+      };
+      this._phases.push(p);
 
-          var p = {
-            n: name,
-            fn: fn,
-            ctx: ctx || this
-          };
-          this._phases.push(p);
+      if (this.isInitialized) {
+        this._runPhase(p);
+      }
 
-          if (this.isInitialized) {
-            this._runPhase(p);
-          }
+      return this;
+    };
 
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      boot: {
+    /**
+     * Run the booter
+     * @param  {Mixed} option
+     * @param  {Object} [ctx]
+     * @return {Promise}
+     * @async
+     * @memberOf JaffaMVC.Boot#
+     * @method boot
+     */
 
-        /**
-         * Run the booter
-         * @param  {Mixed} option
-         * @param  {Object} [ctx]
-         * @return {Promise}
-         * @async
-         * @memberOf JaffaMVC.Boot#
-         * @method boot
-         */
+    Boot.prototype.boot = function boot(options, ctx) {
+      var _this16 = this;
 
-        value: function boot(options, ctx) {
-          var _this16 = this;
+      // If already started throw an error
+      if (this.isInitialized) {
+        throw new InitializerError("already initalized");
+      }
 
-          // If already started throw an error
-          if (this.isInitialized) {
-            throw new InitializerError("already initalized");
-          }
+      var phases = this._phases;
 
-          var phases = this._phases;
+      return utils.eachAsync(phases, function(p) {
+        return _this16._runPhase(p, options);
+      }).then(function() {
+        _this16._initialized = true;
+      });
+    };
 
-          return utils.eachAsync(phases, function(p) {
-            return _this16._runPhase(p, options);
-          }).then(function() {
-            _this16._initialized = true;
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      reset: {
+    /**
+     * Reset the booter
+     * @return {JaffaMVC.Boot}
+     *
+     * @memberOf JaffaMVC.Boot#
+     * @method reset
+     */
 
-        /**
-         * Reset the booter
-         * @return {JaffaMVC.Boot}
-         *
-         * @memberOf JaffaMVC.Boot#
-         * @method reset
-         */
+    Boot.prototype.reset = function reset() {
+      this._initialized = false;
+      return this;
+    };
 
-        value: function reset() {
-          this._initialized = false;
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      _runPhase: {
+    /**
+     * Run phase
+     * @private
+     * @memberOf JaffaMVC.Boot#
+     * @method _runPhase
+     */
 
-        /**
-         * Run phase
-         * @private
-         * @memberOf JaffaMVC.Boot#
-         * @method _runPhase
-         */
+    Boot.prototype._runPhase = function _runPhase(phase, options) {
+      return utils.callAsyncFunction(phase.fn, phase.ctx, options);
+    };
 
-        value: function _runPhase(phase, options) {
-          return utils.callAsyncFunction(phase.fn, phase.ctx, options);
-        },
-        writable: true,
-        configurable: true
-      },
+    _createClass(Boot, {
       isInitialized: {
 
         /**
@@ -785,8 +752,7 @@
 
         get: function() {
           return this._initialized;
-        },
-        configurable: true
+        }
       }
     });
 
@@ -795,16 +761,16 @@
 
   //
 
-  var ChannelError = (function(JaffaError) {
+  var ChannelError = (function(_JaffaError2) {
     function ChannelError() {
       _classCallCheck(this, ChannelError);
 
-      if (JaffaError != null) {
-        JaffaError.apply(this, arguments);
+      if (_JaffaError2 != null) {
+        _JaffaError2.apply(this, arguments);
       }
     }
 
-    _inherits(ChannelError, JaffaError);
+    _inherits(ChannelError, _JaffaError2);
 
     return ChannelError;
   })(JaffaError);
@@ -921,7 +887,7 @@
     }
   };
 
-  var Channel = (function(BaseClass) {
+  var Channel = (function(_BaseClass) {
     /**
      * Channel
      * @param {String} name The name of the channel
@@ -938,28 +904,22 @@
       this._name = name;
     }
 
-    _inherits(Channel, BaseClass);
+    _inherits(Channel, _BaseClass);
 
-    _prototypeProperties(Channel, {
+    Channel.prototype.extendObject = function extendObject(obj) {
+      JaffaMVC.utils.proxy(obj, this, ["comply", "command", "stopComplying", "reply", "request", "stopReplying"]);
+    };
+
+    _createClass(Channel, null, {
       Commands: {
         get: function() {
           return Commands;
-        },
-        configurable: true
+        }
       },
       Requests: {
         get: function() {
           return Request;
-        },
-        configurable: true
-      }
-    }, {
-      extendObject: {
-        value: function extendObject(obj) {
-          JaffaMVC.utils.proxy(obj, this, ["comply", "command", "stopComplying", "reply", "request", "stopReplying"]);
-        },
-        writable: true,
-        configurable: true
+        }
       }
     });
 
@@ -970,7 +930,7 @@
 
   //
 
-  var Module = (function(BaseClass) {
+  var Module = (function(_BaseClass2) {
     function Module(name, options, app) {
       _classCallCheck(this, Module);
 
@@ -979,12 +939,113 @@
         name: name,
         app: app
       });
-      _get(Object.getPrototypeOf(Module.prototype), "constructor", this).call(this);
+      _BaseClass2.call(this);
     }
 
-    _inherits(Module, BaseClass);
+    _inherits(Module, _BaseClass2);
 
-    _prototypeProperties(Module, null, {
+    Module.prototype.addInitializer = function addInitializer(name, fn, ctx) {
+      this.initializer.phase(name, fn, ctx || this);
+    };
+
+    Module.prototype.addFinalizer = function addFinalizer(name, fn, ctx) {
+      this.finalizer.phase(name, fn, ctx || this);
+    };
+
+    Module.prototype.start = function start(options) {
+      var _this16 = this;
+
+      if (this.initializer.isInitialized) {
+        return Promise.resolve();
+      }
+      this.triggerMethod("before:start", options);
+      return this.initializer.boot(options).then(function(ret) {
+        return _this16._startSubmodules();
+      }).then(function() {
+        _this16.triggerMethod("start", options);
+      });
+    };
+
+    Module.prototype.stop = function stop(options) {
+      var _this16 = this;
+
+      if (!this.isRunning) {
+        return Promise.resolve();
+      }
+
+      this.triggerMethod("before:stop", options);
+      return this.finalizer.boot(options).then(function(r) {
+        return _this16._stopSubmodules(options);
+      }).then(function() {
+        // Reset intializers
+        _this16.initializer.reset();
+        _this16.finalizer.reset();
+
+        _this16.triggerMethod("stop", options);
+      });
+    };
+
+    Module.prototype.module = function module(name, def) {
+      var options = arguments[2] === undefined ? {} : arguments[2];
+
+      if (def == null) {
+        return this.modules[name];
+      }
+
+      if (this.modules.hasOwnProperty(name)) {
+        throw new Error("Module already defined " + name);
+      }
+
+      var Klass = def;
+      if (typeof def !== "function") {
+        Klass = Module.extend(def);
+      }
+
+      this.modules[name] = new Klass(name, options, this.app || this);
+      return this.modules[name];
+    };
+
+    Module.prototype.removeModule = function removeModule(name) {
+      var module = this.module(name);
+      if (!module) {
+        return;
+      }
+      module.stop().then(function() {
+        module.destroy();
+      });
+    };
+
+    Module.prototype.removeAllModules = function removeAllModules() {
+      for (var key in this.modules) {
+        this.removeModule(key);
+      }
+    };
+
+    Module.prototype.destroy = function destroy() {
+      this.removeAllModules();
+      _BaseClass2.prototype.destroy.call(this);
+    };
+
+    // Private API
+
+    Module.prototype._startSubmodules = function _startSubmodules(options) {
+      var _this16 = this;
+
+      return utils.eachAsync(Object.keys(this.modules), function(name) {
+        var mod = _this16.modules[name];
+        if (mod.startWithParent) {
+          return mod.start(options);
+        }
+      });
+    };
+
+    Module.prototype._stopSubmodules = function _stopSubmodules() {
+      return utils.eachAsync(this.modules, function(mod) {
+        return mod.stop();
+      });
+    };
+
+    _createClass(Module, {
       startWithParent: {
         get: function() {
           if (this._startWithParent == null) {
@@ -994,114 +1055,7 @@
         },
         set: function(val) {
           this._startWithParent = val;
-        },
-        configurable: true
-      },
-      addInitializer: {
-        value: function addInitializer(name, fn, ctx) {
-          this.initializer.phase(name, fn, ctx || this);
-        },
-        writable: true,
-        configurable: true
-      },
-      addFinalizer: {
-        value: function addFinalizer(name, fn, ctx) {
-          this.finalizer.phase(name, fn, ctx || this);
-        },
-        writable: true,
-        configurable: true
-      },
-      start: {
-        value: function start(options) {
-          var _this16 = this;
-
-          if (this.initializer.isInitialized) {
-            return Promise.resolve();
-          }
-          this.triggerMethod("before:start", options);
-          return this.initializer.boot(options).then(function(ret) {
-            return _this16._startSubmodules();
-          }).then(function() {
-            _this16.triggerMethod("start", options);
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      stop: {
-        value: function stop(options) {
-          var _this16 = this;
-
-          if (!this.isRunning) {
-            return Promise.resolve();
-          }
-
-          this.triggerMethod("before:stop", options);
-          return this.finalizer.boot(options).then(function(r) {
-            return _this16._stopSubmodules(options);
-          }).then(function() {
-            // Reset intializers
-            _this16.initializer.reset();
-            _this16.finalizer.reset();
-
-            _this16.triggerMethod("stop", options);
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      module: {
-        value: function module(name, def) {
-          var options = arguments[2] === undefined ? {} : arguments[2];
-
-          if (def == null) {
-            return this.modules[name];
-          }
-
-          if (this.modules.hasOwnProperty(name)) {
-            throw new Error("Module already defined " + name);
-          }
-
-          var Klass = def;
-          if (typeof def !== "function") {
-            Klass = Module.extend(def);
-          }
-
-          this.modules[name] = new Klass(name, options, this.app || this);
-          return this.modules[name];
-        },
-        writable: true,
-        configurable: true
-      },
-      removeModule: {
-        value: function removeModule(name) {
-          var module = this.module(name);
-          if (!module) {
-            return;
-          }
-          module.stop().then(function() {
-            module.destroy();
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      removeAllModules: {
-        value: function removeAllModules() {
-          for (var key in this.modules) {
-            this.removeModule(key);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-        value: function destroy() {
-          this.removeAllModules();
-          _get(Object.getPrototypeOf(Module.prototype), "destroy", this).call(this);
-        },
-        writable: true,
-        configurable: true
+        }
       },
       initializer: {
         get: function() {
@@ -1109,8 +1063,7 @@
             this._initializer = new Boot();
           }
           return this._initializer;
-        },
-        configurable: true
+        }
       },
       finalizer: {
         get: function() {
@@ -1118,8 +1071,7 @@
             this._finalizer = new Boot();
           }
           return this._finalizer;
-        },
-        configurable: true
+        }
       },
       modules: {
         get: function() {
@@ -1127,40 +1079,12 @@
             this._modules = [];
           }
           return this._modules;
-        },
-        configurable: true
+        }
       },
       isRunning: {
         get: function() {
           return this.initializer.isInitialized && !this.finalizer.isInitialized;
-        },
-        configurable: true
-      },
-      _startSubmodules: {
-
-        // Private API
-
-        value: function _startSubmodules(options) {
-          var _this16 = this;
-
-          return utils.eachAsync(Object.keys(this.modules), function(name) {
-            var mod = _this16.modules[name];
-            if (mod.startWithParent) {
-              return mod.start(options);
-            }
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      _stopSubmodules: {
-        value: function _stopSubmodules() {
-          return utils.eachAsync(this.modules, function(mod) {
-            return mod.stop();
-          });
-        },
-        writable: true,
-        configurable: true
+        }
       }
     });
 
@@ -1170,7 +1094,7 @@
   //
   //
 
-  var Region = (function(BaseClass) {
+  var Region = (function(_BaseClass3) {
 
     /**
      * Regions manage a view
@@ -1189,134 +1113,109 @@
 
       this.options = options;
       this.el = this.getOption("el");
-      _get(Object.getPrototypeOf(Region.prototype), "constructor", this).call(this);
+      _BaseClass3.call(this);
     }
 
-    _inherits(Region, BaseClass);
+    _inherits(Region, _BaseClass3);
 
-    _prototypeProperties(Region, {
-      buildRegion: {
-        /**
-         * Build region from a definition
-         * @param {Object|String|JaffaMVC.Region} def The description of the region
-         * @return {JaffaMVC.Region}
-         * @memberof JaffaMVC.Region
-         */
+    /**
+     * Build region from a definition
+     * @param {Object|String|JaffaMVC.Region} def The description of the region
+     * @return {JaffaMVC.Region}
+     * @memberof JaffaMVC.Region
+     */
 
-        value: function buildRegion(def) {
-          if (def instanceof Region) {
-            return def;
-          } else if (typeof def === "string") {
-            return buildBySelector(def, Region);
-          } else {
-            return buildByObject(def);
-          }
-        },
-        writable: true,
-        configurable: true
+    Region.buildRegion = function buildRegion(def) {
+      if (def instanceof Region) {
+        return def;
+      } else if (typeof def === "string") {
+        return buildBySelector(def, Region);
+      } else {
+        return buildByObject(def);
       }
-    }, {
-      show: {
+    };
 
-        /**
-         * Show a view in the region.
-         * This will destroy or remove any existing views.
-         * @param  {View} view    The view to Show
-         * @return {Region}       this for chaining.
-         * @memberof JaffaMVC.Region#
-         */
+    /**
+     * Show a view in the region.
+     * This will destroy or remove any existing views.
+     * @param  {View} view    The view to Show
+     * @return {Region}       this for chaining.
+     * @memberof JaffaMVC.Region#
+     */
 
-        value: function show(view, options) {
-          var diff = view !== this.currentView;
-          // Remove any containing views
-          this.empty();
+    Region.prototype.show = function show(view, options) {
+      var diff = view !== this.currentView;
+      // Remove any containing views
+      this.empty();
 
-          if (diff) {
-            // If the view is destroyed be others
-            view.once("destroy", this.empty, this);
+      if (diff) {
+        // If the view is destroyed be others
+        view.once("destroy", this.empty, this);
 
-            view.once("render", function() {
-              utils.triggerMethodOn(view, "show");
-            });
+        view.once("render", function() {
+          utils.triggerMethodOn(view, "show");
+        });
 
-            view.render();
+        view.render();
 
-            utils.triggerMethodOn(view, "before:show");
+        utils.triggerMethodOn(view, "before:show");
 
-            this._attachHtml(view);
+        this._attachHtml(view);
 
-            this.currentView = view;
-          }
-
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-
-        /**
-         * Destroy the region, this will remove any views, but not the containing element
-         * @return {Region} this for chaining
-         * @memberof JaffaMVC.Region#
-         */
-
-        value: function destroy() {
-          this.empty();
-          this.stopListening();
-        },
-        writable: true,
-        configurable: true
-      },
-      empty: {
-
-        /**
-         * Empty the region. This will destroy any existing view.
-         * @memberof JaffaMVC.Region#
-         * @return {Region} this for chaining;
-         */
-
-        value: function empty() {
-
-          if (!this.currentView) {
-            return;
-          }
-          var view = this.currentView;
-
-          view.off("destroy", this.empty, this);
-          this.trigger("before:empty", view);
-          this._destroyView();
-          this.trigger("empty", view);
-
-          delete this.currentView;
-
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      _attachHtml: {
-        value: function _attachHtml(view) {
-          this.el.innerHtml = "";
-          this.el.appendChild(view.el);
-        },
-        writable: true,
-        configurable: true
-      },
-      _destroyView: {
-        value: function _destroyView() {
-          var view = this.currentView;
-
-          if (view.destroy && typeof view.destroy === "function" && !view.isDestroyed) {
-            view.destroy();
-          } else if (view.remove && typeof view.remove === "function") {
-            view.remove();
-          }
-        },
-        writable: true,
-        configurable: true
+        this.currentView = view;
       }
-    });
+
+      return this;
+    };
+
+    /**
+     * Destroy the region, this will remove any views, but not the containing element
+     * @return {Region} this for chaining
+     * @memberof JaffaMVC.Region#
+     */
+
+    Region.prototype.destroy = function destroy() {
+      this.empty();
+      this.stopListening();
+    };
+
+    /**
+     * Empty the region. This will destroy any existing view.
+     * @memberof JaffaMVC.Region#
+     * @return {Region} this for chaining;
+     */
+
+    Region.prototype.empty = function empty() {
+
+      if (!this.currentView) {
+        return;
+      }
+      var view = this.currentView;
+
+      view.off("destroy", this.empty, this);
+      this.trigger("before:empty", view);
+      this._destroyView();
+      this.trigger("empty", view);
+
+      delete this.currentView;
+
+      return this;
+    };
+
+    Region.prototype._attachHtml = function _attachHtml(view) {
+      this.el.innerHtml = "";
+      this.el.appendChild(view.el);
+    };
+
+    Region.prototype._destroyView = function _destroyView() {
+      var view = this.currentView;
+
+      if (view.destroy && typeof view.destroy === "function" && !view.isDestroyed) {
+        view.destroy();
+      } else if (view.remove && typeof view.remove === "function") {
+        view.remove();
+      }
+    };
 
     return Region;
   })(BaseClass);
@@ -1346,149 +1245,113 @@
 
   var proxyties = ["addRegions", "addRegion", "removeRegion", "removeRegions"];
 
-  var RegionManager = (function(BaseClass) {
+  var RegionManager = (function(_BaseClass4) {
     function RegionManager() {
       _classCallCheck(this, RegionManager);
 
       this.regions = {};
-      _get(Object.getPrototypeOf(RegionManager.prototype), "constructor", this).call(this);
+      _BaseClass4.call(this);
     }
 
-    _inherits(RegionManager, BaseClass);
+    _inherits(RegionManager, _BaseClass4);
 
-    _prototypeProperties(RegionManager, null, {
-      extendObject: {
-        value: function extendObject(obj) {
-          utils.proxy(obj, this, proxyties);
-          obj.regions = this.regions;
-        },
-        writable: true,
-        configurable: true
-      },
-      unproxyObject: {
-        value: function unproxyObject(obj) {
-          proxyties.forEach(function(m) {
-            if (obj[m]) {
-              delete obj[m];
-            }
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      addRegions: {
+    RegionManager.prototype.extendObject = function extendObject(obj) {
+      utils.proxy(obj, this, proxyties);
+      obj.regions = this.regions;
+    };
 
-        /**
-         * Add one or more regions to the region manager
-         * @param {Object} regions
-         * @memberof JaffaMVC.RegionManager#
-         */
+    RegionManager.prototype.unproxyObject = function unproxyObject(obj) {
+      proxyties.forEach(function(m) {
+        if (obj[m]) {
+          delete obj[m];
+        }
+      });
+    };
 
-        value: function addRegions(regions) {
-          var def = undefined,
-            out = {},
-            keys = Object.keys(regions);
-          keys.forEach(function(k) {
-            def = regions[k];
-            out[k] = this.addRegion(k, def);
-          }, this);
-          return out;
-        },
-        writable: true,
-        configurable: true
-      },
-      addRegion: {
+    /**
+     * Add one or more regions to the region manager
+     * @param {Object} regions
+     * @memberof JaffaMVC.RegionManager#
+     */
 
-        /**
-         * Add a region to the RegionManager
-         * @param {String} name   The name of the regions
-         * @param {String|Object|JaffaMVC.Region} def The region to associate with the name and the RegionManager
-         * @memberof JaffaMVC.RegionManager#
-         */
+    RegionManager.prototype.addRegions = function addRegions(regions) {
+      var def = undefined,
+        out = {},
+        keys = Object.keys(regions);
+      keys.forEach(function(k) {
+        def = regions[k];
+        out[k] = this.addRegion(k, def);
+      }, this);
+      return out;
+    };
 
-        value: function addRegion(name, def) {
+    /**
+     * Add a region to the RegionManager
+     * @param {String} name   The name of the regions
+     * @param {String|Object|JaffaMVC.Region} def The region to associate with the name and the RegionManager
+     * @memberof JaffaMVC.RegionManager#
+     */
 
-          var region = JaffaMVC.Region.buildRegion(def);
-          this._setRegion(name, region);
+    RegionManager.prototype.addRegion = function addRegion(name, def) {
 
-          return region;
-        },
-        writable: true,
-        configurable: true
-      },
-      removeRegion: {
+      var region = JaffaMVC.Region.buildRegion(def);
+      this._setRegion(name, region);
 
-        /**
-         * Remove one or more regions from the manager
-         * @param {...name} name A array of region names
-         * @memberof JaffaMVC.RegionManager#
-         */
+      return region;
+    };
 
-        value: function removeRegion() {
-          var names = __slice.call(arguments);
+    /**
+     * Remove one or more regions from the manager
+     * @param {...name} name A array of region names
+     * @memberof JaffaMVC.RegionManager#
+     */
 
-          names.forEach(function(name) {
-            if (__has.call(this.regions, name)) {
-              var region = this.regions[name];
-              region.destroy();
-              this._unsetRegion(name);
-            }
-          }, this);
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-        /**
-         * Destroy the regionmanager
-         * @memberof JaffaMVC.RegionManager#
-         */
+    RegionManager.prototype.removeRegion = function removeRegion() {
+      var names = __slice.call(arguments);
 
-        value: function destroy() {
-          _get(Object.getPrototypeOf(RegionManager.prototype), "destroy", this).call(this);
-          this.removeRegions();
-        },
-        writable: true,
-        configurable: true
-      },
-      removeRegions: {
+      names.forEach(function(name) {
+        if (__has.call(this.regions, name)) {
+          var region = this.regions[name];
+          region.destroy();
+          this._unsetRegion(name);
+        }
+      }, this);
+    };
 
-        /**
-         * Remove all regions from the manager
-         * @memberof JaffaMVC.RegionManager#
-         */
+    /**
+     * Destroy the regionmanager
+     * @memberof JaffaMVC.RegionManager#
+     */
 
-        value: function removeRegions() {
-          this.removeRegion.apply(this, Object.keys(this.regions));
-        },
-        writable: true,
-        configurable: true
-      },
-      _setRegion: {
+    RegionManager.prototype.destroy = function destroy() {
+      _BaseClass4.prototype.destroy.call(this);
+      this.removeRegions();
+    };
 
-        /**
-         * @private
-         */
+    /**
+     * Remove all regions from the manager
+     * @memberof JaffaMVC.RegionManager#
+     */
 
-        value: function _setRegion(name, region) {
-          this.regions[name] = region;
-        },
-        writable: true,
-        configurable: true
-      },
-      _unsetRegion: {
+    RegionManager.prototype.removeRegions = function removeRegions() {
+      this.removeRegion.apply(this, Object.keys(this.regions));
+    };
 
-        /**
-         * @private
-         */
+    /**
+     * @private
+     */
 
-        value: function _unsetRegion(name) {
-          delete this.regions[name];
-        },
-        writable: true,
-        configurable: true
-      }
-    });
+    RegionManager.prototype._setRegion = function _setRegion(name, region) {
+      this.regions[name] = region;
+    };
+
+    /**
+     * @private
+     */
+
+    RegionManager.prototype._unsetRegion = function _unsetRegion(name) {
+      delete this.regions[name];
+    };
 
     return RegionManager;
   })(BaseClass);
@@ -1543,7 +1406,7 @@
   // To extend an existing view to use native methods, extend the View prototype
   // with the mixin: _.extend(MyView.prototype, Backbone.NativeViewMixin);
 
-  var NativeView = (function(BBView) {
+  var NativeView = (function(_BBView) {
     function NativeView() {
       for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
@@ -1552,159 +1415,162 @@
       _classCallCheck(this, NativeView);
 
       this._domEvents = [];
-      _get(Object.getPrototypeOf(NativeView.prototype), "constructor", this).apply(this, args);
+      _BBView.call.apply(_BBView, [this].concat(args));
     }
 
-    _inherits(NativeView, BBView);
+    _inherits(NativeView, _BBView);
 
-    _prototypeProperties(NativeView, null, {
-      $: {
-        value: function $(selector) {
-          return JaffaMVC.$(selector, this.el);
-        },
-        writable: true,
-        configurable: true
-      },
-      _removeElement: {
-        value: function _removeElement() {
-          this.undelegateEvents();
-          if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
-        },
-        writable: true,
-        configurable: true
-      },
-      _setElement: {
+    NativeView.prototype.$ = function $(selector) {
+      return JaffaMVC.$(selector, this.el);
+    };
 
-        // Apply the `element` to the view. `element` can be a CSS selector,
-        // a string of HTML, or an Element node.
+    NativeView.prototype._removeElement = function _removeElement() {
+      this.undelegateEvents();
+      if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
+    };
 
-        value: function _setElement(element) {
-          if (typeof element === "string") {
-            if (paddedLt.test(element)) {
-              var el = document.createElement("div");
-              el.innerHTML = element;
-              this.el = el.firstChild;
-            } else {
-              this.el = document.querySelector(element);
-            }
-          } else {
-            this.el = element;
-          }
+    // Apply the `element` to the view. `element` can be a CSS selector,
+    // a string of HTML, or an Element node.
 
-          this.$el = JaffaMVC.$(this.el);
-        },
-        writable: true,
-        configurable: true
-      },
-      _setAttributes: {
-
-        // Set a hash of attributes to the view's `el`. We use the "prop" version
-        // if available, falling back to `setAttribute` for the catch-all.
-
-        value: function _setAttributes(attrs) {
-          //
-          for (var attr in attrs) {
-            attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      delegate: {
-
-        // Make a event delegation handler for the given `eventName` and `selector`
-        // and attach it to `this.el`.
-        // If selector is empty, the listener will be bound to `this.el`. If not, a
-        // new handler that will recursively traverse up the event target's DOM
-        // hierarchy looking for a node that matches the selector. If one is found,
-        // the event's `delegateTarget` property is set to it and the return the
-        // result of calling bound `listener` with the parameters given to the
-        // handler.
-
-        value: function delegate(eventName, selector, listener) {
-          /*jslint eqeq: true*/
-          if (typeof selector === "function") {
-            listener = selector;
-            selector = null;
-          }
-
-          var root = this.el;
-          var handler = selector ? function(e) {
-            var node = e.target || e.srcElement;
-            for (; node && node != root; node = node.parentNode) {
-              if (matchesSelector.call(node, selector)) {
-                e.delegateTarget = node;
-                listener(e);
-              }
-            }
-          } : listener;
-
-          elementAddEventListener.call(this.el, eventName, handler, false);
-          this._domEvents.push({
-            eventName: eventName,
-            handler: handler,
-            listener: listener,
-            selector: selector
-          });
-          return handler;
-        },
-        writable: true,
-        configurable: true
-      },
-      undelegate: {
-
-        // Remove a single delegated event. Either `eventName` or `selector` must
-        // be included, `selector` and `listener` are optional.
-
-        value: function undelegate(eventName, selector, listener) {
-          if (typeof selector === "function") {
-            listener = selector;
-            selector = null;
-          }
-
-          if (this.el) {
-            var handlers = this._domEvents.slice();
-            for (var i = 0, len = handlers.length; i < len; i++) {
-              var item = handlers[i];
-
-              var match = item.eventName === eventName && (listener ? item.listener === listener : true) && (selector ? item.selector === selector : true);
-
-              if (!match) continue;
-
-              elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-              this._domEvents.splice(indexOf(handlers, item), 1);
-            }
-          }
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      undelegateEvents: {
-
-        // Remove all events created with `delegate` from `el`
-
-        value: function undelegateEvents() {
-          if (this.el) {
-            for (var i = 0, len = this._domEvents.length; i < len; i++) {
-              var item = this._domEvents[i];
-              elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-            }
-            this._domEvents.length = 0;
-          }
-          return this;
-        },
-        writable: true,
-        configurable: true
+    NativeView.prototype._setElement = function _setElement(element) {
+      if (typeof element === "string") {
+        if (paddedLt.test(element)) {
+          var el = document.createElement("div");
+          el.innerHTML = element;
+          this.el = el.firstChild;
+        } else {
+          this.el = document.querySelector(element);
+        }
+      } else {
+        this.el = element;
       }
-    });
+
+      this.$el = JaffaMVC.$(this.el);
+    };
+
+    // Set a hash of attributes to the view's `el`. We use the "prop" version
+    // if available, falling back to `setAttribute` for the catch-all.
+
+    NativeView.prototype._setAttributes = function _setAttributes(attrs) {
+      //
+      for (var attr in attrs) {
+        attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
+      }
+    };
+
+    NativeView.prototype.delegateEvents = function delegateEvents(events) {
+      var _this16 = this;
+
+      if (!(events || (events = utils.result(this, "events")))) {
+        return this;
+      }
+      this.undelegateEvents();
+
+      var dels = [];
+      for (var key in events) {
+        var method = events[key];
+        if (typeof method !== "function") method = this[events[key]];
+
+        var match = key.match(/^(\S+)\s*(.*)$/);
+        // Set delegates immediately and defer event on this.el
+        if (match[2]) {
+          this.delegate(match[1], match[2], method.bind(this));
+        } else {
+          dels.push([match[1], method.bind(this)]);
+        }
+      }
+
+      dels.forEach(function(d) {
+        _this16.delegate(d[0], d[1]);
+      });
+
+      return this;
+    };
+
+    // Make a event delegation handler for the given `eventName` and `selector`
+    // and attach it to `this.el`.
+    // If selector is empty, the listener will be bound to `this.el`. If not, a
+    // new handler that will recursively traverse up the event target's DOM
+    // hierarchy looking for a node that matches the selector. If one is found,
+    // the event's `delegateTarget` property is set to it and the return the
+    // result of calling bound `listener` with the parameters given to the
+    // handler.
+
+    NativeView.prototype.delegate = function delegate(eventName, selector, listener) {
+      /*jslint eqeq: true*/
+      if (typeof selector === "function") {
+        listener = selector;
+        selector = null;
+      }
+
+      var root = this.el;
+      var handler = selector ? function(e) {
+        var node = e.target || e.srcElement;
+        for (; node && node != root; node = node.parentNode) {
+          if (matchesSelector.call(node, selector)) {
+            e.delegateTarget = node;
+            listener(e);
+          }
+        }
+      } : function(e) {
+        if (e.delegateTarget) return;
+        listener(e);
+      };
+
+      elementAddEventListener.call(this.el, eventName, handler, false);
+      this._domEvents.push({
+        eventName: eventName,
+        handler: handler,
+        listener: listener,
+        selector: selector
+      });
+      return handler;
+    };
+
+    // Remove a single delegated event. Either `eventName` or `selector` must
+    // be included, `selector` and `listener` are optional.
+
+    NativeView.prototype.undelegate = function undelegate(eventName, selector, listener) {
+      if (typeof selector === "function") {
+        listener = selector;
+        selector = null;
+      }
+
+      if (this.el) {
+        var handlers = this._domEvents.slice();
+        for (var i = 0, len = handlers.length; i < len; i++) {
+          var item = handlers[i];
+
+          var match = item.eventName === eventName && (listener ? item.listener === listener : true) && (selector ? item.selector === selector : true);
+
+          if (!match) continue;
+
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+          this._domEvents.splice(indexOf(handlers, item), 1);
+        }
+      }
+      return this;
+    };
+
+    // Remove all events created with `delegate` from `el`
+
+    NativeView.prototype.undelegateEvents = function undelegateEvents() {
+      if (this.el) {
+        for (var i = 0, len = this._domEvents.length; i < len; i++) {
+          var item = this._domEvents[i];
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+        }
+        this._domEvents.length = 0;
+      }
+      return this;
+    };
 
     return NativeView;
   })(BBView);
 
   //
 
-  var View = (function(NativeView) {
+  var View = (function(_NativeView) {
     /**
      * Base View
      * @param {Object}            [options]           Options See Backbone.View for additonal arguments
@@ -1733,311 +1599,264 @@
         this._isRendered = true;
       });
 
-      _get(Object.getPrototypeOf(View.prototype), "constructor", this).call(this, options);
+      _NativeView.call(this, options);
     }
 
-    _inherits(View, NativeView);
+    _inherits(View, _NativeView);
 
-    _prototypeProperties(View, null, {
+    /**
+     * Destroy the view and release all resources
+     * @memberof JaffaMVC.View#
+     * @method destroy
+     * @return {JaffaMVC.View}
+     */
+
+    View.prototype.destroy = function destroy() {
+      if (this.isDestroyed === true) {
+        return this;
+      }
+
+      var args = __slice.call(arguments);
+
+      this.triggerMethod("before:destroy", args);
+
+      this.isDestroyed = true;
+
+      this.triggerMethod("destroy", args);
+      debug("view destroy:", this);
+
+      this.remove();
+
+      return this;
+    };
+
+    /**
+     * Render the view
+     * @memberOf  JaffaMVC.View#
+     * @method render
+     * @return {JaffaMVC.View}
+     */
+
+    View.prototype.render = function render() {
+      var _this16 = this;
+
+      this.triggerMethod("before:render", this);
+
+      var template = this.getOption("template");
+
+      if (template != null) {
+        this._renderTemplate(template).then(function(templ) {
+          _this16.el.innerHTML = templ;
+          _this16.delegateEvents();
+          _this16.triggerMethod("render", _this16);
+        });
+      } else {
+        this.delegateEvents();
+        this.triggerMethod("render", this);
+      }
+
+      return this;
+    };
+
+    /**
+     * Get template data for template rendering
+     * @return {Object} object to render
+     * @memberOf JaffaMVC.View#
+     * @method getTemplateData
+     */
+
+    View.prototype.getTemplateData = function getTemplateData() {
+      return this.model && typeof this.model.toJSON === "function" ? this.model.toJSON() : {};
+    };
+
+    /**
+     * Delegate events
+     * @param  {Object} eventArgs Events object
+     * @return {View}           this
+     * @memberOf JaffaMVC.View#
+     * @method delegateEvents
+     */
+
+    View.prototype.delegateEvents = function delegateEvents(eventArgs) {
+      this.bindUIElements();
+
+      var events = eventArgs || this.events;
+
+      events = this.normalizeUIKeys(events);
+
+      var triggers = this._configureTriggers();
+
+      var combined = {};
+
+      Object.assign(combined, events, triggers);
+
+      _NativeView.prototype.delegateEvents.call(this, combined);
+    };
+
+    /**
+     * Undelegate events
+     * @return {View} this
+     * @memberOf JaffaMVC.View#
+     * @method undelegateEvents
+     */
+
+    View.prototype.undelegateEvents = function undelegateEvents() {
+      this.unbindUIElements();
+      _NativeView.prototype.undelegateEvents.call(this);
+    };
+
+    /**
+     * Configure triggers
+     * @return {Object} events object
+     * @memberOf JaffaMVC.View#
+     * @method _configureTriggers
+     * @private
+     */
+
+    View.prototype._configureTriggers = function _configureTriggers() {
+      if (!this.triggers) {
+        return {};
+      }
+
+      // Allow `triggers` to be configured as a function
+      var triggers = this.normalizeUIKeys(utils.result(this, "triggers"));
+
+      // Configure the triggers, prevent default
+      // action and stop propagation of DOM events
+      var events = {},
+        val = undefined,
+        key = undefined;
+      for (key in triggers) {
+        val = triggers[key];
+        events[key] = this._buildViewTrigger(val);
+      }
+
+      return events;
+    };
+
+    /**
+     * builder trigger function
+     * @param  {Object|String} triggerDef Trigger definition
+     * @return {Function}
+     * @memberOf JaffaMVC.View#
+     * @method _buildViewTrigger
+     * @private
+     */
+
+    View.prototype._buildViewTrigger = function _buildViewTrigger(triggerDef) {
+
+      if (typeof triggerDef === "string") triggerDef = {
+        event: triggerDef
+      };
+
+      var options = Object.assign({
+        preventDefault: true,
+        stopPropagation: true
+      }, triggerDef);
+
+      return function(e) {
+
+        if (e) {
+          if (e.preventDefault && options.preventDefault) {
+            e.preventDefault();
+          }
+
+          if (e.stopPropagation && options.stopPropagation) {
+            e.stopPropagation();
+          }
+        }
+
+        this.triggerMethod(options.event, {
+          view: this,
+          model: this.model,
+          collection: this.collection
+        });
+      };
+    };
+
+    /* UI Elements */
+
+    View.prototype.bindUIElements = function bindUIElements() {
+      var _this16 = this;
+
+      var ui = this.getOption("ui");
+      if (!ui) {
+        return;
+      }
+      if (!this._ui) {
+        this._ui = ui;
+      }
+
+      ui = utils.result(this, "_ui");
+
+      this.ui = {};
+
+      Object.keys(ui).forEach(function(k) {
+        var elm = _this16.$(ui[k]);
+        if (elm && elm.length) {
+          // unwrap if it's a nodelist.
+          if (elm instanceof NodeList) {
+            elm = elm[0];
+          }
+          _this16.ui[k] = elm;
+        }
+      });
+    };
+
+    View.prototype.unbindUIElements = function unbindUIElements() {};
+
+    /**
+     * Renders the template
+     * @param  {Function|String} template The template to render
+     * @return {Promise<String>}
+     * @method _renderTemplate
+     * @memberOf  JaffaMVC.View#
+     */
+
+    View.prototype._renderTemplate = function _renderTemplate(template) {
+      var data = this.getOption("getTemplateData").call(this);
+
+      if (typeof template === "function") {
+        return utils.callAsyncFunction(template, this, data);
+      } else {
+        return Promise.resolve(template);
+      }
+    };
+
+    View.prototype.normalizeUIKeys = function normalizeUIKeys(obj) {
+      //
+      var reg = /@ui.([a-zA-Z_\-\$#]+)/i,
+        o = {},
+        k = undefined,
+        v = undefined,
+        ms = undefined,
+        sel = undefined,
+        ui = undefined;
+
+      for (k in obj) {
+        v = obj[k];
+        if ((ms = reg.exec(k)) !== null) {
+          ui = ms[1], sel = this._ui[ui];
+          if (sel != null) {
+            k = k.replace(ms[0], sel);
+          }
+        }
+        o[k] = v;
+      }
+
+      return o;
+    };
+
+    _createClass(View, {
       isShown: {
         get: function() {
           return !!this._isShown;
-        },
-        configurable: true
+        }
       },
       isRendered: {
         get: function() {
           return !!this._isRendered;
-        },
-        configurable: true
-      },
-      destroy: {
-
-        /**
-         * Destroy the view and release all resources
-         * @memberof JaffaMVC.View#
-         * @method destroy
-         * @return {JaffaMVC.View}
-         */
-
-        value: function destroy() {
-          if (this.isDestroyed === true) {
-            return this;
-          }
-
-          var args = __slice.call(arguments);
-
-          this.triggerMethod("before:destroy", args);
-
-          this.isDestroyed = true;
-
-          this.triggerMethod("destroy", args);
-          debug("view destroy:", this);
-
-          this.remove();
-
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      render: {
-
-        /**
-         * Render the view
-         * @memberOf  JaffaMVC.View#
-         * @method render
-         * @return {JaffaMVC.View}
-         */
-
-        value: function render() {
-          var _this16 = this;
-
-          this.triggerMethod("before:render", this);
-
-          this.undelegateEvents();
-
-          var template = this.getOption("template");
-
-          if (template != null) {
-            this._renderTemplate(template).then(function(templ) {
-              _this16.el.innerHTML = templ;
-              _this16.delegateEvents();
-              _this16.triggerMethod("render", _this16);
-            });
-          } else {
-            this.delegateEvents();
-            this.triggerMethod("render", this);
-          }
-
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      getTemplateData: {
-
-        /**
-         * Get template data for template rendering
-         * @return {Object} object to render
-         * @memberOf JaffaMVC.View#
-         * @method getTemplateData
-         */
-
-        value: function getTemplateData() {
-          return this.model ? this.model.toJSON() : {};
-        },
-        writable: true,
-        configurable: true
-      },
-      delegateEvents: {
-
-        /**
-         * Delegate events
-         * @param  {Object} eventArgs Events object
-         * @return {View}           this
-         * @memberOf JaffaMVC.View#
-         * @method delegateEvents
-         */
-
-        value: function delegateEvents(eventArgs) {
-          this.bindUIElements();
-
-          var events = eventArgs || this.events;
-
-          events = this.normalizeUIKeys(events);
-
-          var triggers = this._configureTriggers();
-
-          var combined = {};
-
-          Object.assign(combined, events, triggers);
-
-          _get(Object.getPrototypeOf(View.prototype), "delegateEvents", this).call(this, combined);
-        },
-        writable: true,
-        configurable: true
-      },
-      undelegateEvents: {
-
-        /**
-         * Undelegate events
-         * @return {View} this
-         * @memberOf JaffaMVC.View#
-         * @method undelegateEvents
-         */
-
-        value: function undelegateEvents() {
-          this.unbindUIElements();
-          _get(Object.getPrototypeOf(View.prototype), "undelegateEvents", this).call(this);
-        },
-        writable: true,
-        configurable: true
-      },
-      _configureTriggers: {
-
-        /**
-         * Configure triggers
-         * @return {Object} events object
-         * @memberOf JaffaMVC.View#
-         * @method _configureTriggers
-         * @private
-         */
-
-        value: function _configureTriggers() {
-          if (!this.triggers) {
-            return {};
-          }
-
-          // Allow `triggers` to be configured as a function
-          var triggers = this.normalizeUIKeys(utils.result(this, "triggers"));
-
-          // Configure the triggers, prevent default
-          // action and stop propagation of DOM events
-          var events = {},
-            val = undefined,
-            key = undefined;
-          for (key in triggers) {
-            val = triggers[key];
-            events[key] = this._buildViewTrigger(val);
-          }
-
-          return events;
-        },
-        writable: true,
-        configurable: true
-      },
-      _buildViewTrigger: {
-
-        /**
-         * builder trigger function
-         * @param  {Object|String} triggerDef Trigger definition
-         * @return {Function}
-         * @memberOf JaffaMVC.View#
-         * @method _buildViewTrigger
-         * @private
-         */
-
-        value: function _buildViewTrigger(triggerDef) {
-
-          if (typeof triggerDef === "string") triggerDef = {
-            event: triggerDef
-          };
-
-          var options = Object.assign({
-            preventDefault: true,
-            stopPropagation: true
-          }, triggerDef);
-
-          return function(e) {
-
-            if (e) {
-              if (e.preventDefault && options.preventDefault) {
-                e.preventDefault();
-              }
-
-              if (e.stopPropagation && options.stopPropagation) {
-                e.stopPropagation();
-              }
-            }
-
-            this.triggerMethod(options.event, {
-              view: this,
-              model: this.model,
-              collection: this.collection
-            });
-          };
-        },
-        writable: true,
-        configurable: true
-      },
-      bindUIElements: {
-
-        /* UI Elements */
-
-        value: function bindUIElements() {
-          var _this16 = this;
-
-          var ui = this.getOption("ui");
-          if (!ui) {
-            return;
-          }
-          if (!this._ui) {
-            this._ui = ui;
-          }
-
-          ui = JaffaMVC.utils.result(this, "_ui");
-
-          this.ui = {};
-
-          Object.keys(ui).forEach(function(k) {
-            var elm = _this16.$(ui[k]);
-            if (elm && elm.length) {
-              // unwrap if it's a nodelist.
-              if (elm instanceof NodeList) {
-                elm = elm[0];
-              }
-              _this16.ui[k] = elm;
-            }
-          });
-          this.ui = this.ui;
-        },
-        writable: true,
-        configurable: true
-      },
-      unbindUIElements: {
-        value: function unbindUIElements() {},
-        writable: true,
-        configurable: true
-      },
-      _renderTemplate: {
-
-        /**
-         * Renders the template
-         * @param  {Function|String} template The template to render
-         * @return {Promise<String>}
-         * @method _renderTemplate
-         * @memberOf  JaffaMVC.View#
-         */
-
-        value: function _renderTemplate(template) {
-          var data = this.getOption("getTemplateData").call(this);
-
-          if (typeof template === "function") {
-            return utils.callAsyncFunction(template, this, data);
-          } else {
-            return Promise.resolve(template);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      normalizeUIKeys: {
-        value: function normalizeUIKeys(obj) {
-          //
-          var reg = /@ui.([a-zA-Z_\-\$#]+)/i,
-            o = {},
-            k = undefined,
-            v = undefined,
-            ms = undefined,
-            sel = undefined,
-            ui = undefined;
-
-          for (k in obj) {
-            v = obj[k];
-            if ((ms = reg.exec(k)) !== null) {
-              ui = ms[1], sel = this._ui[ui];
-              if (sel != null) {
-                k = k.replace(ms[0], sel);
-              }
-            }
-            o[k] = v;
-          }
-
-          return o;
-        },
-        writable: true,
-        configurable: true
+        }
       }
     });
 
@@ -2051,7 +1870,7 @@
 
   //
 
-  var LayoutView = (function(View) {
+  var LayoutView = (function(_View) {
     /**
      * LayoutView
      * @param {Object} options options
@@ -2082,52 +1901,40 @@
         this.addRegions(regions);
       });
 
-      _get(Object.getPrototypeOf(LayoutView.prototype), "constructor", this).call(this, options);
+      _View.call(this, options);
     }
 
-    _inherits(LayoutView, View);
+    _inherits(LayoutView, _View);
 
-    _prototypeProperties(LayoutView, null, {
-      addRegion: {
-        value: function addRegion(name, def) {
-          if (typeof def === "string") {
-            var elm = this.$(def);
-            if (!elm.length) throw new Error("element must exists in dom");
+    LayoutView.prototype.addRegion = function addRegion(name, def) {
+      if (typeof def === "string") {
+        var elm = this.$(def);
+        if (!elm.length) throw new Error("element must exists in dom");
 
-            def = new JaffaMVC.Region({
-              el: elm[0]
-            });
-          }
-          this._regionManager.addRegion(name, def);
-        },
-        writable: true,
-        configurable: true
-      },
-      addRegions: {
-        value: function addRegions(regions) {
-          for (var k in regions) {
-            this.addRegion(k, regions[k]);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-        value: function destroy() {
-          _get(Object.getPrototypeOf(LayoutView.prototype), "destroy", this).call(this);
-          this._regionManager.destroy();
-        },
-        writable: true,
-        configurable: true
+        def = new Region({
+          el: elm[0]
+        });
       }
-    });
+      this._regionManager.addRegion(name, def);
+    };
+
+    LayoutView.prototype.addRegions = function addRegions(regions) {
+      for (var k in regions) {
+        this.addRegion(k, regions[k]);
+      }
+    };
+
+    LayoutView.prototype.destroy = function destroy() {
+      _View.prototype.destroy.call(this);
+      this._regionManager.destroy();
+    };
 
     return LayoutView;
   })(View);
 
   //
 
-  var CollectionView = (function(View) {
+  var CollectionView = (function(_View2) {
 
     /**
      * A CollectionView shows a maintains a collection
@@ -2149,7 +1956,7 @@
 
       utils.bindAll(this, ["render"]);
 
-      _get(Object.getPrototypeOf(CollectionView.prototype), "constructor", this).call(this, options);
+      _View2.call(this, options);
 
       this.sort = true;
       this.once("render", this._initCollectionEvents);
@@ -2168,494 +1975,402 @@
       });
     }
 
-    _inherits(CollectionView, View);
+    _inherits(CollectionView, _View2);
 
-    _prototypeProperties(CollectionView, null, {
-      render: {
+    /**
+     * Render the collection view and alle of the children
+     * @return {JaffaMVC.CollectionView}
+     *
+     * @memberOf JaffaMVC.CollectionView#
+     * @method render
+     */
 
-        /**
-         * Render the collection view and alle of the children
-         * @return {JaffaMVC.CollectionView}
-         *
-         * @memberOf JaffaMVC.CollectionView#
-         * @method render
-         */
+    CollectionView.prototype.render = function render(options) {
 
-        value: function render(options) {
+      this.destroyChildren();
+      this._destroyContainer();
 
-          this.destroyChildren();
-          this._destroyContainer();
+      this.listenToOnce(this, "render", function() {
 
-          this.listenToOnce(this, "render", function() {
+        this._initContainer();
 
-            this._initContainer();
+        if (this.collection) {
+          this._renderChildren(this.collection.models);
+        }
+        if (typeof options === "function") {
+          options();
+        }
+      });
 
-            if (this.collection) {
-              this._renderChildren(this.collection.models);
-            }
-            if (typeof options === "function") {
-              options();
-            }
-          });
+      return _View2.prototype.render.call(this);
+    };
 
-          return _get(Object.getPrototypeOf(CollectionView.prototype), "render", this).call(this);
-        },
-        writable: true,
-        configurable: true
-      },
-      renderCollection: {
+    /**
+     *  Renders the entire collection
+     */
 
-        /**
-         *  Renders the entire collection
-         */
+    CollectionView.prototype.renderCollection = function renderCollection() {
+      var _this16 = this;
 
-        value: function renderCollection() {
-          var _this16 = this;
+      var view = undefined;
+      this.trigger("before:render:children");
+      this.collection.models.forEach(function(model, index) {
+        view = _this16._getChildView(model);
+        _this16._addChildView(view, index);
+      });
+      this.trigger("render:children");
+    };
 
-          var view = undefined;
-          this.trigger("before:render:children");
-          this.collection.models.forEach(function(model, index) {
-            view = _this16._getChildView(model);
-            _this16._addChildView(view, index);
-          });
-          this.trigger("render:children");
-        },
-        writable: true,
-        configurable: true
-      },
-      renderChildView: {
-        value: function renderChildView(view, index) {
-          this.triggerMethod("before:render:child", view);
+    CollectionView.prototype.renderChildView = function renderChildView(view, index) {
+      this.triggerMethod("before:render:child", view);
 
-          view.render();
-          this._attachHTML(view, index);
+      view.render();
+      this._attachHTML(view, index);
 
-          this.triggerMethod("render:child", view);
-        },
-        writable: true,
-        configurable: true
-      },
-      removeChildView: {
-        value: function removeChildView(view) {
+      this.triggerMethod("render:child", view);
+    };
 
-          if (!view) {
-            return;
-          }
-          if (typeof view.destroy === "function") {
-            view.destroy();
-          } else if (typeof view.remove === "function") {
-            view.remove();
-          }
+    CollectionView.prototype.removeChildView = function removeChildView(view) {
 
-          this.stopListening(view);
-          this.children["delete"](view);
-
-          this._updateIndexes(view, false);
-        },
-        writable: true,
-        configurable: true
-      },
-      startBuffering: {
-        // Buffering
-        /**
-         * When inserting a batch of models, this method should be called first,
-         * to optimise perfomance
-         * @memberof JaffaMVC.CollectionView#
-         */
-
-        value: function startBuffering() {
-          this._buffer = document.createDocumentFragment();
-          this._isBuffering = true;
-          this._bufferedChildren = [];
-        },
-        writable: true,
-        configurable: true
-      },
-      stopBuffering: {
-
-        /**
-         * Should be called when finished inserting a batch of models
-         * @memberof JaffaMVC.CollectionView#
-         */
-
-        value: function stopBuffering() {
-          this._isBuffering = false;
-
-          this._triggerBeforeShowBufferedChildren();
-
-          this._container.appendChild(this._buffer);
-
-          this._triggerShowBufferedChildren();
-
-          delete this._bufferedChildren;
-        },
-        writable: true,
-        configurable: true
-      },
-      _triggerBeforeShowBufferedChildren: {
-        value: function _triggerBeforeShowBufferedChildren() {
-          if (this._isShown) {
-            this._bufferedChildren.forEach(function(item) {
-              if (!item._isShown) utils.triggerMethodOn(item, "before:show");
-            });
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      _triggerShowBufferedChildren: {
-        value: function _triggerShowBufferedChildren() {
-          if (this._isShown) {
-            this._bufferedChildren.forEach(function(item) {
-              if (!item._isShown) utils.triggerMethodOn(item, "show");
-            });
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      _getChildView: {
-
-        /**
-         * Returns a new instance of this.childView with attached model.
-         *
-         * @param {JaffaMVC.Model} model
-         * @protected
-         * @memberof JaffaMVC.CollectionView#
-         */
-
-        value: function _getChildView(model) {
-          var View = this.getOption("childView") || JaffaMVC.View,
-            options = this.getOption("childViewOptions") || {};
-
-          return new View(Object.assign({
-            model: model
-          }, options));
-        },
-        writable: true,
-        configurable: true
-      },
-      _attachHTML: {
-
-        /**
-         * Attach the childview's element to the CollectionView.
-         * When in buffer mode, the view is added to a documentfragment to optimize performance
-         * @param {JaffaMVC.View} view  A view
-         * @param {Number} index The index in which to insert the view
-         * @protected
-         * @memberof JaffaMVC.CollectionView#
-         */
-
-        value: function _attachHTML(view, index) {
-          if (this._isBuffering) {
-            this._buffer.appendChild(view.el);
-            this._bufferedChildren.push(view);
-          } else {
-            if (this._isShown) {
-              utils.triggerMethodOn(view, "before:show");
-            }
-
-            if (!this._insertBefore(view, index)) {
-              this._insertAfter(view);
-            }
-            if (this._isShown) utils.triggerMethodOn(view, "show");
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      _renderChildren: {
-
-        /**
-         * Render child
-         * @param {Array<JaffaMVC.Model>} models
-         */
-
-        value: function _renderChildren(models) {
-
-          this.destroyChildren();
-
-          if (this.collection.length !== 0) {
-            this.startBuffering();
-            this.renderCollection();
-            this.stopBuffering();
-          }
-          // TODO: What to do on empty collection
-        },
-        writable: true,
-        configurable: true
-      },
-      _addChildView: {
-
-        /**
-         * Add childview to collection view
-         * @private
-         * @memberOf JaffaMVC.CollectionView#
-         * @method  _addChildView
-         * @param {JaffaMVC.View} view  A view
-         * @param {Number} index index
-         */
-
-        value: function _addChildView(view, index) {
-
-          this._updateIndexes(view, true, index);
-
-          this.proxyChildViewEvents(view);
-
-          this.children.add(view);
-
-          this.renderChildView(view, index);
-
-          this.triggerMethod("add:child", view);
-        },
-        writable: true,
-        configurable: true
-      },
-      proxyChildViewEvents: {
-
-        /**
-         * Proxy event froms childview to the collectionview
-         * @param {JaffaMVC.View} view
-         * @private
-         * @method  _proxyChildViewEvents
-         * @memberOf JaffaMVC.CollectionView#
-         */
-
-        value: function proxyChildViewEvents(view) {
-          var prefix = this.getOption("prefix") || "childview";
-
-          this.listenTo(view, "all", function() {
-            var args = __slice.call(arguments);
-
-            args[0] = prefix + ":" + args[0];
-            args.splice(1, 0, view);
-
-            utils.callFunction(this.triggerMethod, this, args);
-          });
-        },
-        writable: true,
-        configurable: true
-      },
-      resortView: {
-        /**
-         * Resort the view
-         * @return {CollectionView} this
-         */
-
-        value: function resortView() {
-          var _this16 = this;
-
-          this.triggerMethod("before:resort");
-          this.render(function() {
-            _this16.triggerMethod("resort");
-          });
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-        /**
-         * Destroy the collection view and all of it's children
-         * @see JaffaMVC.View
-         * @return {JaffaMVC.View}
-         */
-
-        value: function destroy() {
-          this.triggerMethod("before:destroy:children");
-          this.destroyChildren();
-          this.triggerMethod("destroy:children");
-
-          return _get(Object.getPrototypeOf(CollectionView.prototype), "destroy", this).call(this);
-        },
-        writable: true,
-        configurable: true
-      },
-      destroyChildren: {
-
-        /**
-         * Destroy all children of the collection view
-         */
-
-        value: function destroyChildren() {
-
-          if (this._container) {
-            this._container.innerHtml = "";
-          }
-          if (this.children.size === 0) {
-            return;
-          }
-          this.children.forEach(this.removeChildView, this);
-          this.children.clear();
-        },
-        writable: true,
-        configurable: true
-      },
-      _insertBefore: {
-
-        // Internal method. Check whether we need to insert the view into
-        // the correct position.
-
-        value: function _insertBefore(childView, index) {
-          var currentView = undefined;
-
-          var findPosition = this.sort && index < this.children.size - 1;
-          if (findPosition) {
-            // Find the view after this one
-            currentView = this.children.find(function(view) {
-              return view._index === index + 1;
-            });
-          }
-
-          if (currentView) {
-            this._container.insertBefore(childView.el, currentView.el);
-            return true;
-          }
-
-          return false;
-        },
-        writable: true,
-        configurable: true
-      },
-      _insertAfter: {
-
-        // Internal method. Append a view to the end of the $el
-
-        value: function _insertAfter(childView) {
-          this._container.appendChild(childView.el);
-        },
-        writable: true,
-        configurable: true
-      },
-      _destroyContainer: {
-        value: function _destroyContainer() {
-          if (this._container) delete this._container;
-        },
-        writable: true,
-        configurable: true
-      },
-      _initCollectionEvents: {
-        value: function _initCollectionEvents() {
-          if (this.collection) {
-
-            this.listenTo(this.collection, "add", this._onCollectionAdd);
-            this.listenTo(this.collection, "remove", this._onCollectionRemove);
-            this.listenTo(this.collection, "reset", this.render);
-
-            if (this.sort) this.listenTo(this.collection, "sort", this._onCollectionSort);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      _initContainer: {
-
-        ///
-        /// Private methods
-        ///
-
-        value: function _initContainer() {
-          var container = this.getOption("childViewContainer");
-          if (container) {
-            container = this.$(container)[0];
-          } else {
-            container = this.el;
-          }
-          this._container = container;
-        },
-        writable: true,
-        configurable: true
-      },
-      _updateIndexes: {
-        value: function _updateIndexes(view, increment, index) {
-          if (!this.sort) {
-            return;
-          }
-          if (increment) {
-            view._index = index;
-
-            this.children.forEach(function(lView, index) {
-              if (lView._index >= view._index) {
-                lView._index++;
-              }
-            });
-          } else {
-
-            this.children.forEach(function(lView) {
-              if (lView._index >= view._index) {
-                lView._index--;
-              }
-            });
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      _onCollectionAdd: {
-
-        // Event handlers
-
-        /**
-         * Called when a model is add to the collection
-         * @param {JaffaMVC.Model|Backbone.model} model Model
-         * @private
-         */
-
-        value: function _onCollectionAdd(model) {
-          var view = this._getChildView(model);
-          var index = this.collection.models.indexOf(model);
-
-          this._addChildView(view, index);
-        },
-        writable: true,
-        configurable: true
-      },
-      _onCollectionRemove: {
-
-        /**
-         * Called when a model is removed from the collection
-         * @param {JaffaMVC.Model|Backbone.model} model Model
-         * @private
-         */
-
-        value: function _onCollectionRemove(model) {
-          var view = this.children.find(function(view) {
-            return view.model === model;
-          });
-
-          this.removeChildView(view);
-        },
-        writable: true,
-        configurable: true
-      },
-      _onCollectionSort: {
-        value: function _onCollectionSort() {
-          var _this16 = this;
-
-          // check for any changes in sort order of views
-
-          var orderChanged = this.collection.find(function(model, index) {
-            var view = _this16.children.find(function(view) {
-              return view.model === model;
-            });
-            return !view || view._index !== index;
-          });
-
-          if (orderChanged) {
-            this.resortView();
-          }
-        },
-        writable: true,
-        configurable: true
+      if (!view) {
+        return;
       }
-    });
+      if (typeof view.destroy === "function") {
+        view.destroy();
+      } else if (typeof view.remove === "function") {
+        view.remove();
+      }
+
+      this.stopListening(view);
+      this.children["delete"](view);
+
+      this._updateIndexes(view, false);
+    };
+
+    // Buffering
+    /**
+     * When inserting a batch of models, this method should be called first,
+     * to optimise perfomance
+     * @memberof JaffaMVC.CollectionView#
+     */
+
+    CollectionView.prototype.startBuffering = function startBuffering() {
+      this._buffer = document.createDocumentFragment();
+      this._isBuffering = true;
+      this._bufferedChildren = [];
+    };
+
+    /**
+     * Should be called when finished inserting a batch of models
+     * @memberof JaffaMVC.CollectionView#
+     */
+
+    CollectionView.prototype.stopBuffering = function stopBuffering() {
+      this._isBuffering = false;
+
+      this._triggerBeforeShowBufferedChildren();
+
+      this._container.appendChild(this._buffer);
+
+      this._triggerShowBufferedChildren();
+
+      delete this._bufferedChildren;
+    };
+
+    CollectionView.prototype._triggerBeforeShowBufferedChildren = function _triggerBeforeShowBufferedChildren() {
+      if (this._isShown) {
+        this._bufferedChildren.forEach(function(item) {
+          if (!item._isShown) utils.triggerMethodOn(item, "before:show");
+        });
+      }
+    };
+
+    CollectionView.prototype._triggerShowBufferedChildren = function _triggerShowBufferedChildren() {
+      if (this._isShown) {
+        this._bufferedChildren.forEach(function(item) {
+          if (!item._isShown) utils.triggerMethodOn(item, "show");
+        });
+      }
+    };
+
+    /**
+     * Returns a new instance of this.childView with attached model.
+     *
+     * @param {JaffaMVC.Model} model
+     * @protected
+     * @memberof JaffaMVC.CollectionView#
+     */
+
+    CollectionView.prototype._getChildView = function _getChildView(model) {
+      var View = this.getOption("childView") || JaffaMVC.View,
+        options = this.getOption("childViewOptions") || {};
+
+      return new View(Object.assign({
+        model: model
+      }, options));
+    };
+
+    /**
+     * Attach the childview's element to the CollectionView.
+     * When in buffer mode, the view is added to a documentfragment to optimize performance
+     * @param {JaffaMVC.View} view  A view
+     * @param {Number} index The index in which to insert the view
+     * @protected
+     * @memberof JaffaMVC.CollectionView#
+     */
+
+    CollectionView.prototype._attachHTML = function _attachHTML(view, index) {
+      if (this._isBuffering) {
+        this._buffer.appendChild(view.el);
+        this._bufferedChildren.push(view);
+      } else {
+        if (this._isShown) {
+          utils.triggerMethodOn(view, "before:show");
+        }
+
+        if (!this._insertBefore(view, index)) {
+          this._insertAfter(view);
+        }
+        if (this._isShown) utils.triggerMethodOn(view, "show");
+      }
+    };
+
+    /**
+     * Render child
+     * @param {Array<JaffaMVC.Model>} models
+     */
+
+    CollectionView.prototype._renderChildren = function _renderChildren(models) {
+
+      this.destroyChildren();
+
+      if (this.collection.length !== 0) {
+        this.startBuffering();
+        this.renderCollection();
+        this.stopBuffering();
+      }
+      // TODO: What to do on empty collection
+    };
+
+    /**
+     * Add childview to collection view
+     * @private
+     * @memberOf JaffaMVC.CollectionView#
+     * @method  _addChildView
+     * @param {JaffaMVC.View} view  A view
+     * @param {Number} index index
+     */
+
+    CollectionView.prototype._addChildView = function _addChildView(view, index) {
+
+      this._updateIndexes(view, true, index);
+
+      this.proxyChildViewEvents(view);
+
+      this.children.add(view);
+
+      this.renderChildView(view, index);
+
+      this.triggerMethod("add:child", view);
+    };
+
+    /**
+     * Proxy event froms childview to the collectionview
+     * @param {JaffaMVC.View} view
+     * @private
+     * @method  _proxyChildViewEvents
+     * @memberOf JaffaMVC.CollectionView#
+     */
+
+    CollectionView.prototype.proxyChildViewEvents = function proxyChildViewEvents(view) {
+      var prefix = this.getOption("prefix") || "childview";
+
+      this.listenTo(view, "all", function() {
+        var args = __slice.call(arguments);
+
+        args[0] = prefix + ":" + args[0];
+        args.splice(1, 0, view);
+
+        utils.callFunction(this.triggerMethod, this, args);
+      });
+    };
+
+    /**
+     * Resort the view
+     * @return {CollectionView} this
+     */
+
+    CollectionView.prototype.resortView = function resortView() {
+      var _this16 = this;
+
+      this.triggerMethod("before:resort");
+      this.render(function() {
+        _this16.triggerMethod("resort");
+      });
+      return this;
+    };
+
+    /**
+     * Destroy the collection view and all of it's children
+     * @see JaffaMVC.View
+     * @return {JaffaMVC.View}
+     */
+
+    CollectionView.prototype.destroy = function destroy() {
+      this.triggerMethod("before:destroy:children");
+      this.destroyChildren();
+      this.triggerMethod("destroy:children");
+
+      return _View2.prototype.destroy.call(this);
+    };
+
+    /**
+     * Destroy all children of the collection view
+     */
+
+    CollectionView.prototype.destroyChildren = function destroyChildren() {
+
+      if (this._container) {
+        this._container.innerHtml = "";
+      }
+      if (this.children.size === 0) {
+        return;
+      }
+      this.children.forEach(this.removeChildView, this);
+      this.children.clear();
+    };
+
+    // Internal method. Check whether we need to insert the view into
+    // the correct position.
+
+    CollectionView.prototype._insertBefore = function _insertBefore(childView, index) {
+      var currentView = undefined;
+
+      var findPosition = this.sort && index < this.children.size - 1;
+      if (findPosition) {
+        // Find the view after this one
+        currentView = this.children.find(function(view) {
+          return view._index === index + 1;
+        });
+      }
+
+      if (currentView) {
+        this._container.insertBefore(childView.el, currentView.el);
+        return true;
+      }
+
+      return false;
+    };
+
+    // Internal method. Append a view to the end of the $el
+
+    CollectionView.prototype._insertAfter = function _insertAfter(childView) {
+      this._container.appendChild(childView.el);
+    };
+
+    CollectionView.prototype._destroyContainer = function _destroyContainer() {
+      if (this._container) delete this._container;
+    };
+
+    CollectionView.prototype._initCollectionEvents = function _initCollectionEvents() {
+      if (this.collection) {
+
+        this.listenTo(this.collection, "add", this._onCollectionAdd);
+        this.listenTo(this.collection, "remove", this._onCollectionRemove);
+        this.listenTo(this.collection, "reset", this.render);
+
+        if (this.sort) this.listenTo(this.collection, "sort", this._onCollectionSort);
+      }
+    };
+
+    ///
+    /// Private methods
+    ///
+
+    CollectionView.prototype._initContainer = function _initContainer() {
+      var container = this.getOption("childViewContainer");
+      if (container) {
+        container = this.$(container)[0];
+      } else {
+        container = this.el;
+      }
+      this._container = container;
+    };
+
+    CollectionView.prototype._updateIndexes = function _updateIndexes(view, increment, index) {
+      if (!this.sort) {
+        return;
+      }
+      if (increment) {
+        view._index = index;
+
+        this.children.forEach(function(lView, index) {
+          if (lView._index >= view._index) {
+            lView._index++;
+          }
+        });
+      } else {
+
+        this.children.forEach(function(lView) {
+          if (lView._index >= view._index) {
+            lView._index--;
+          }
+        });
+      }
+    };
+
+    // Event handlers
+
+    /**
+     * Called when a model is add to the collection
+     * @param {JaffaMVC.Model|Backbone.model} model Model
+     * @private
+     */
+
+    CollectionView.prototype._onCollectionAdd = function _onCollectionAdd(model) {
+      var view = this._getChildView(model);
+      var index = this.collection.models.indexOf(model);
+
+      this._addChildView(view, index);
+    };
+
+    /**
+     * Called when a model is removed from the collection
+     * @param {JaffaMVC.Model|Backbone.model} model Model
+     * @private
+     */
+
+    CollectionView.prototype._onCollectionRemove = function _onCollectionRemove(model) {
+      var view = this.children.find(function(view) {
+        return view.model === model;
+      });
+
+      this.removeChildView(view);
+    };
+
+    CollectionView.prototype._onCollectionSort = function _onCollectionSort() {
+      var _this16 = this;
+
+      // check for any changes in sort order of views
+
+      var orderChanged = this.collection.find(function(model, index) {
+        var view = _this16.children.find(function(view) {
+          return view.model === model;
+        });
+        return !view || view._index !== index;
+      });
+
+      if (orderChanged) {
+        this.resortView();
+      }
+    };
 
     return CollectionView;
   })(View);
 
   //
 
-  var Application = (function(Module) {
+  var Application = (function(_Module) {
     /**
      * Construct a new application class
      * @param {Object} options
@@ -2690,145 +2405,114 @@
       }
     }
 
-    _inherits(Application, Module);
+    _inherits(Application, _Module);
 
-    _prototypeProperties(Application, null, {
-      channel: {
+    /**
+     * Create a new channel
+     * @param  {String} name Name of the module
+     * @return {JaffaMVC.Channel}
+     *
+     * @memberOf JaffaMVC.Application#
+     * @method  channel
+     */
 
-        /**
-         * Create a new channel
-         * @param  {String} name Name of the module
-         * @return {JaffaMVC.Channel}
-         *
-         * @memberOf JaffaMVC.Application#
-         * @method  channel
-         */
-
-        value: function channel(name) {
-          if (this.channels[name]) {
-            return this.channels[name];
-          }
-          var channel = new JaffaMVC.Channel(name);
-          this.channels[name] = channel;
-
-          return channel;
-        },
-        writable: true,
-        configurable: true
-      },
-      startHistory: {
-
-        /**
-         * Start (backbone) history
-         * @param {Object} options
-         * @param {Boolean} options.pushState
-         * @param {String} options.root
-         *
-         * @memberOf JaffaMVC.Application#
-         * @method startHistory
-         */
-
-        value: function startHistory(options) {
-          if (!this.isRunning) {
-            throw new Error("app not started");
-          }
-
-          if (Backbone.history) {
-            this.trigger("before:history:start", options);
-            Backbone.history.start(options);
-            this.trigger("history:start", options);
-          }
-        },
-        writable: true,
-        configurable: true
-      },
-      stopHistory: {
-
-        /**
-         * Stop history
-         * @return {Application}
-         *
-         * @memberOf JaffaMVC.Application#
-         * @method stopHistory
-         */
-
-        value: function stopHistory() {
-          if (Backbone.history) {
-            this.trigger("before:history:stop");
-            Backbone.history.stop();
-            this.trigger("history:stop");
-          }
-          return this;
-        },
-        writable: true,
-        configurable: true
-      },
-      navigate: {
-
-        /**
-         * Navigate to url-fragment
-         * @param {String} fragment The url path to navigate to
-         * @param {Object} options Options
-         * @param {Boolean} options.trigger
-         *
-         * @memberOf JaffaMVC.Application#
-         * @method navigate
-         */
-
-        value: function navigate(fragment, options) {
-          Backbone.history.navigate(fragment, options);
-        },
-        writable: true,
-        configurable: true
-      },
-      currentFragment: {
-
-        /**
-         * Get current url fragment
-         * @return {String}
-         */
-
-        value: function currentFragment() {
-          return Backbone.history.fragment;
-        },
-        writable: true,
-        configurable: true
-      },
-      destroy: {
-
-        /**
-         * Destroy the application (and all attached views and modules)
-         *
-         * @memberOf JaffaMVC.Application#
-         * @method destroy
-         */
-
-        value: function destroy() {
-
-          _get(Object.getPrototypeOf(Application.prototype), "destroy", this).call(this);
-
-          this.channels.forEach(function(channel) {
-            channel.destroy();
-          });
-
-          delete this.channels;
-          this._regionManager.unproxyObject(this);
-          this._regionManager.destroy();
-          delete this._regionManager;
-        },
-        writable: true,
-        configurable: true
+    Application.prototype.channel = function channel(name) {
+      if (this.channels[name]) {
+        return this.channels[name];
       }
-    });
+      var channel = new JaffaMVC.Channel(name);
+      this.channels[name] = channel;
+
+      return channel;
+    };
+
+    /**
+     * Start (backbone) history
+     * @param {Object} options
+     * @param {Boolean} options.pushState
+     * @param {String} options.root
+     *
+     * @memberOf JaffaMVC.Application#
+     * @method startHistory
+     */
+
+    Application.prototype.startHistory = function startHistory(options) {
+      if (!this.isRunning) {
+        throw new Error("app not started");
+      }
+
+      if (Backbone.history) {
+        this.trigger("before:history:start", options);
+        Backbone.history.start(options);
+        this.trigger("history:start", options);
+      }
+    };
+
+    /**
+     * Stop history
+     * @return {Application}
+     *
+     * @memberOf JaffaMVC.Application#
+     * @method stopHistory
+     */
+
+    Application.prototype.stopHistory = function stopHistory() {
+      if (Backbone.history) {
+        this.trigger("before:history:stop");
+        Backbone.history.stop();
+        this.trigger("history:stop");
+      }
+      return this;
+    };
+
+    /**
+     * Navigate to url-fragment
+     * @param {String} fragment The url path to navigate to
+     * @param {Object} options Options
+     * @param {Boolean} options.trigger
+     *
+     * @memberOf JaffaMVC.Application#
+     * @method navigate
+     */
+
+    Application.prototype.navigate = function navigate(fragment, options) {
+      Backbone.history.navigate(fragment, options);
+    };
+
+    /**
+     * Get current url fragment
+     * @return {String}
+     */
+
+    Application.prototype.currentFragment = function currentFragment() {
+      return Backbone.history.fragment;
+    };
+
+    /**
+     * Destroy the application (and all attached views and modules)
+     *
+     * @memberOf JaffaMVC.Application#
+     * @method destroy
+     */
+
+    Application.prototype.destroy = function destroy() {
+
+      _Module.prototype.destroy.call(this);
+
+      this.channels.forEach(function(channel) {
+        channel.destroy();
+      });
+
+      delete this.channels;
+      this._regionManager.unproxyObject(this);
+      this._regionManager.destroy();
+      delete this._regionManager;
+    };
 
     return Application;
   })(Module);
 
-  /*if (!this.ui || !this._ui) return;
-   this.ui = this._ui;
-  delete this._ui;*/
-
-  Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;
+  /*Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;*/
 
   Backbone.ajax = ajax();
 
@@ -2845,7 +2529,7 @@
     Object: BaseClass,
     utils: utils,
     NativeView: NativeView
-  })
+  });
 
   return JaffaMVC;
 

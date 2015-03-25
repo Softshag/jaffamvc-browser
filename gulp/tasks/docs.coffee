@@ -1,6 +1,5 @@
 
 gulp = require 'gulp'
-jsdoc = require 'gulp-jsdoc'
 config = require '../config'
 {exec} = require('child_process')
 

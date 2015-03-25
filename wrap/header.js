@@ -15,7 +15,6 @@
     catch (e) {
       try { backbone = require('backbone'); } catch (e) { err = e; }
     }
-
     try { co = require('co')} catch (e) {}
     if (backbone === null) throw err;
     module.exports = factory(backbone, co);
