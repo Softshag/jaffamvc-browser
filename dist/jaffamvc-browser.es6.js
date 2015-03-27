@@ -1286,7 +1286,9 @@
         listener(e);
       };
 
-      elementAddEventListener.call(this.el, eventName, handler, false);
+      let useCap = eventName === 'blur' || eventName === 'focus'
+
+      elementAddEventListener.call(this.el, eventName, handler, useCap);
       this._domEvents.push({
         eventName: eventName,
         handler: handler,
