@@ -589,32 +589,13 @@
 
     List.prototype.find = function find(fn, ctx) {
       ctx = ctx || this;
-      var found = null;
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this._items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var item = _step.value;
-
-          if (fn.call(ctx, item) === true) return item;
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"]) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
+      var item;
+      for (var i = 0; i < this._items.size; i++) {
+        item = this._items[i];
+        if (fn.call(ctx, item)) {
+          return item;
         }
       }
-
       return null;
     };
 
@@ -1387,6 +1368,8 @@
     return -1;
   };
 
+  var unbubblebles = "focus blur change".split(" ");
+
   // Find the right `Element#matches` for IE>=9 and modern browsers.
   var matchesSelector = ElementProto.matches || ElementProto.webkitMatchesSelector || ElementProto.mozMatchesSelector || ElementProto.msMatchesSelector || ElementProto.oMatchesSelector ||
     // Make our own `Element#matches` for IE8
@@ -1506,8 +1489,13 @@
       var root = this.el;
       var handler = selector ? function(e) {
         var node = e.target || e.srcElement;
+
+        // Already handled
+        if (e.delegateTarget) return;
+
         for (; node && node != root; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
+
             e.delegateTarget = node;
             listener(e);
           }
@@ -1516,8 +1504,8 @@
         if (e.delegateTarget) return;
         listener(e);
       };
-
-      var useCap = eventName === "blur" || eventName === "focus";
+      /*jshint bitwise: false*/
+      var useCap = ~unbubblebles.indexOf(eventName);
 
       elementAddEventListener.call(this.el, eventName, handler, useCap);
       this._domEvents.push({

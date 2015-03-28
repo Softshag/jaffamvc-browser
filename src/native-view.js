@@ -27,6 +27,8 @@ var indexOf = function(array, item) {
   return -1;
 }
 
+var unbubblebles = 'focus blur change'.split(' ');
+
 // Find the right `Element#matches` for IE>=9 and modern browsers.
 var matchesSelector = ElementProto.matches ||
     ElementProto.webkitMatchesSelector ||
@@ -132,8 +134,13 @@ class NativeView extends BBView {
     let root = this.el;
     let handler = selector ? function (e) {
       let node = e.target || e.srcElement;
+
+      // Already handled
+      if (e.delegateTarget) return;
+
       for (; node && node != root; node = node.parentNode) {
         if (matchesSelector.call(node, selector)) {
+
           e.delegateTarget = node;
           listener(e);
         }
@@ -142,8 +149,8 @@ class NativeView extends BBView {
       if (e.delegateTarget) return;
       listener(e);
     };
-
-    let useCap = eventName === 'blur' || eventName === 'focus'
+    /*jshint bitwise: false*/
+    let useCap = ~unbubblebles.indexOf(eventName);
 
     elementAddEventListener.call(this.el, eventName, handler, useCap);
     this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});

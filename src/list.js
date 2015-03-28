@@ -24,9 +24,10 @@ class List  {
 
   find (fn, ctx) {
     ctx = ctx||this;
-    let found = null;
-    for (let item of this._items) {
-      if (fn.call(ctx, item) === true) return item;
+    var item;
+    for (let i=0;i<this._items.size; i++) {
+      item = this._items[i];
+      if (fn.call(ctx, item)) return item;
     }
     return null;
   }

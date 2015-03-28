@@ -1,6 +1,6 @@
 JaffaMVC.Debug = true;
 //Backbone.$ = JaffaMVC.$ = $;
-var html = '<div style="height:100px;background-color:red;"><button class="button">OK</button></div>';
+var html = '<div style="height:100px;background-color:red;"><button class="button">OK</button><input class="input"></div>';
 JaffaMVC.$(function () {
 
   var app = new JaffaMVC.Application({
@@ -28,6 +28,9 @@ JaffaMVC.$(function () {
       },
       "click @ui.button": function () {
         this.ui.button.innerHTML = "TEST"
+      },
+      "change .input": function () {
+        console.log('input change')
       }
     },
     onRender: function () {

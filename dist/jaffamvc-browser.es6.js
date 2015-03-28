@@ -490,9 +490,10 @@
 
     find(fn, ctx) {
       ctx = ctx || this;
-      let found = null;
-      for (let item of this._items) {
-        if (fn.call(ctx, item) === true) return item;
+      var item;
+      for (let i = 0; i < this._items.size; i++) {
+        item = this._items[i];
+        if (fn.call(ctx, item)) return item;
       }
       return null;
     }
@@ -1168,6 +1169,8 @@
     return -1;
   }
 
+  var unbubblebles = 'focus blur change'.split(' ');
+
   // Find the right `Element#matches` for IE>=9 and modern browsers.
   var matchesSelector = ElementProto.matches ||
     ElementProto.webkitMatchesSelector ||
@@ -1275,8 +1278,13 @@
       let root = this.el;
       let handler = selector ? function(e) {
         let node = e.target || e.srcElement;
+
+        // Already handled
+        if (e.delegateTarget) return;
+
         for (; node && node != root; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
+
             e.delegateTarget = node;
             listener(e);
           }
@@ -1285,8 +1293,8 @@
         if (e.delegateTarget) return;
         listener(e);
       };
-
-      let useCap = eventName === 'blur' || eventName === 'focus'
+      /*jshint bitwise: false*/
+      let useCap = ~unbubblebles.indexOf(eventName);
 
       elementAddEventListener.call(this.el, eventName, handler, useCap);
       this._domEvents.push({
