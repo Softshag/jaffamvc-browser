@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.13
+ * JaffaMVC.js 0.0.15
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.13";
+  JaffaMVC.version = "0.0.15";
   JaffaMVC.Debug = false;
 
 
@@ -490,10 +490,10 @@
 
     find(fn, ctx) {
       ctx = ctx || this;
-      var item;
-      for (let i = 0; i < this._items.size; i++) {
-        item = this._items[i];
-        if (fn.call(ctx, item)) return item;
+      var item, values = this._items.values();
+
+      while (item = values.next()) {
+        if (fn.call(ctx, item.value)) return item.value;
       }
       return null;
     }

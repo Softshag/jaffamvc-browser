@@ -24,10 +24,10 @@ class List  {
 
   find (fn, ctx) {
     ctx = ctx||this;
-    var item;
-    for (let i=0;i<this._items.size; i++) {
-      item = this._items[i];
-      if (fn.call(ctx, item)) return item;
+    var item, values = this._items.values();
+
+    while (item = values.next()) {
+      if (fn.call(ctx, item.value)) return item.value;
     }
     return null;
   }
