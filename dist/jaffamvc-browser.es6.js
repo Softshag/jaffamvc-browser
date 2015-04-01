@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.16
+ * JaffaMVC.js 0.0.17
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.16";
+  JaffaMVC.version = "0.0.17";
   JaffaMVC.Debug = false;
 
 
@@ -2262,7 +2262,7 @@
 
   Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;
 
-  Backbone.ajax = ajax();
+  JaffaMVC.ajax = ajax();
 
   Object.assign(JaffaMVC, {
     Application: Application,
