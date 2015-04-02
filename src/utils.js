@@ -83,9 +83,9 @@ let utils = {
 	bindAll (obj, fns) {
 		return utils.proxy(obj, obj, fns);
 	},
-	getOption (option) {
+	getOption (option, obj={}) {
     let options = this.options || {};
-		return options[option] || this[option];
+		return obj[option] || options[option] || this[option];
 	},
 
 	/**
