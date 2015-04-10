@@ -48,10 +48,15 @@ JaffaMVC.$(function () {
 
 
 
-
-
   var collectionView = new JaffaMVC.CollectionView({
     collection: collection,
+    emptyView: JaffaMVC.View.extend({
+      className: 'test',
+      initialize: function () {
+        console.log('render')
+        this.el.innerText = "Waiting"
+      }
+    }),
     childView: JaffaMVC.View.extend({
       triggers: {
         'click': "click"
@@ -68,7 +73,10 @@ JaffaMVC.$(function () {
   collectionView.on('childview:click', function () {
     console.log('child view was selected');
     //collection.fetch();
-    //collection.reset([{"title":"Title 1"},{"title": "Title 2"}, {"title": "Title 3"}])
+    collection.reset()
+    setTimeout(function () {
+      collection.add({title:"Something new"});
+    },2000)
   });
 
 

@@ -1755,6 +1755,7 @@
         if (this.collection) {
           this._renderChildren(this.collection.models);
         }
+
         if (typeof options === 'function') {
           options();
         }
@@ -1801,6 +1802,10 @@
         this.stopListening(view);
         this.children.delete(view);
 
+        if (this.children.size === 0) {
+          this.showEmptyView();
+        }
+
         this._updateIndexes(view, false)
 
       }
@@ -1832,6 +1837,41 @@
 
 
       delete this._bufferedChildren;
+    }
+
+    /**
+     * Show empty view
+     * Emptyview can be a function or a function
+     */
+    showEmptyView() {
+      let EmptyView = this.getOption('emptyView');
+
+      if (!EmptyView || this._emptyView)
+        return
+
+      if (typeof EmptyView === 'function') {
+        EmptyView = EmptyView.call(this);
+      }
+
+      let view = this._emptyView = new EmptyView();
+      utils.triggerMethodOn(view, 'before:show');
+      this._container.appendChild(view.render().el);
+      utils.triggerMethodOn(view, 'show');
+
+    }
+
+    hideEmptyView() {
+      if (!this._emptyView) return;
+
+      if (typeof this._emptyView.destroy === 'function') {
+        this._emptyView.destroy();
+      } else if (typeof this._emptyView.remove === 'function') {
+        this._emptyView.remove();
+      }
+
+      delete this._emptyView;
+
+      this._container.innerHtml = '';
     }
 
     _triggerBeforeShowBufferedChildren() {
@@ -1903,9 +1943,12 @@
       this.destroyChildren();
 
       if (this.collection.length !== 0) {
+        this.hideEmptyView();
         this.startBuffering();
         this.renderCollection();
         this.stopBuffering();
+      } else {
+        this.showEmptyView();
       }
       // TODO: What to do on empty collection
 
@@ -1927,6 +1970,8 @@
       this.proxyChildViewEvents(view);
 
       this.children.add(view);
+
+      this.hideEmptyView();
 
       this.renderChildView(view, index);
 
