@@ -23,6 +23,7 @@ class List  {
   }
 
   find (fn, ctx) {
+    /*jshint -W084 */
     ctx = ctx||this;
     var item, values = this._items.values();
 

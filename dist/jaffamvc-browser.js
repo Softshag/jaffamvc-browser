@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.0.18
+ * JaffaMVC.js 0.1.0
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.0.18";
+  JaffaMVC.version = "0.1.0";
   JaffaMVC.Debug = false;
 
 
@@ -590,6 +590,7 @@
     };
 
     List.prototype.find = function find(fn, ctx) {
+      //
       ctx = ctx || this;
       var item,
         values = this._items.values();
@@ -2089,11 +2090,11 @@
       if (!EmptyView || this._emptyView) {
         return;
       }
-      if (typeof EmptyView === "function") {
-        EmptyView = EmptyView.call(this);
-      }
+      var view = this._emptyView = new EmptyView({
+        model: this.model,
+        collection: this.collection
+      });
 
-      var view = this._emptyView = new EmptyView();
       utils.triggerMethodOn(view, "before:show");
       this._container.appendChild(view.render().el);
       utils.triggerMethodOn(view, "show");

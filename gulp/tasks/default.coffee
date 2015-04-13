@@ -10,7 +10,7 @@ gulp.task 'bump', ->
   .pipe bump()
   .pipe gulp.dest './'
 
-gulp.task 'bump:minor', ->
+gulp.task 'bump-minor', ->
   gulp.src './package.json'
   .pipe bump type: 'minor'
   .pipe gulp.dest './'

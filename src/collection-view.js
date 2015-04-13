@@ -155,11 +155,11 @@ class CollectionView extends View {
     if (!EmptyView || this._emptyView)
       return
 
-    if (typeof EmptyView === 'function') {
-      EmptyView = EmptyView.call(this);
-    }
-
-    let view = this._emptyView = new EmptyView();
+    let view = this._emptyView = new EmptyView({
+      model: this.model,
+      collection: this.collection
+    });
+    
     utils.triggerMethodOn(view,'before:show');
     this._container.appendChild(view.render().el);
     utils.triggerMethodOn(view,'show');
