@@ -74,11 +74,14 @@ utils.assign(ViewModule.prototype, {
         regions = this.getOption('regions', options),
         model = this.getOption('model', options);
 
-    this.layout = new jaffamvc.LayoutView({
-      model: model,
-      template: template,
-      regions: regions
-    });
+    var opts = {}
+    if (template) opts.template = template;
+    if (regions) opts.regions = regions;
+    if (model) opts.model = model;
+
+    var LayoutView = this.getOptions('layoutView', options) || jaffamvc.LayoutView;
+
+    this.layout = new LayoutView(opts);
 
     this.listenTo(this.layout, 'destroy', this.stop);
 
