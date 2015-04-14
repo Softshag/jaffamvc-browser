@@ -19,7 +19,7 @@ function ViewModule() {
   this.addInitializer('init:views', this.initViews);
   this.addFinalizer('deinit:views', this.deinitViews);
 
-  if (typeof this.initialize === 'function') 
+  if (typeof this.initialize === 'function')
     this.initialize.call(this,this.options);
 
   this._initRoutes();
@@ -51,7 +51,7 @@ utils.assign(ViewModule.prototype, {
           return utils.callFunction(callback, self, args);
         }
       };
-      
+
 
       if (self.isRunning) {
         fn();
@@ -74,12 +74,12 @@ utils.assign(ViewModule.prototype, {
         regions = this.getOption('regions', options),
         model = this.getOption('model', options);
 
-    var opts = {}
+    var opts = {};
     if (template) opts.template = template;
     if (regions) opts.regions = regions;
     if (model) opts.model = model;
 
-    var LayoutView = this.getOptions('layoutView', options) || jaffamvc.LayoutView;
+    var LayoutView = this.getOption('layoutView', options) || jaffamvc.LayoutView;
 
     this.layout = new LayoutView(opts);
 
@@ -90,7 +90,7 @@ utils.assign(ViewModule.prototype, {
     if (autoRender === false) {
       return;
     }
-    
+
     var region = this.getOption('region', options);
 
     if (region != null) {
@@ -105,7 +105,7 @@ utils.assign(ViewModule.prototype, {
       delete this.layout;
 
     }
-      
+
   },
   deinitViews: function () {},
   _initRoutes: function () {
@@ -118,7 +118,7 @@ utils.assign(ViewModule.prototype, {
     if (this.router != null) {
       return;
     }
-    
+
     for (r in routes) {
       h = routes[r];
       if (typeof h === 'string') {

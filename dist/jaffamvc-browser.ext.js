@@ -96,12 +96,12 @@
         regions = this.getOption('regions', options),
         model = this.getOption('model', options);
 
-      var opts = {}
+      var opts = {};
       if (template) opts.template = template;
       if (regions) opts.regions = regions;
       if (model) opts.model = model;
 
-      var LayoutView = this.getOptions('layoutView', options) || jaffamvc.LayoutView;
+      var LayoutView = this.getOption('layoutView', options) || jaffamvc.LayoutView;
 
       this.layout = new LayoutView(opts);
 
