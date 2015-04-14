@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.Ext.js 0.1.3
+ * JaffaMVC.Ext.js 0.1.4
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -94,12 +94,14 @@
     initLayout: function(options) {
       var template = this.getOption('template', options),
         regions = this.getOption('regions', options),
-        model = this.getOption('model', options);
+        model = this.getOption('model', options),
+        collection = this.getOption('collection', options);
 
       var opts = {};
       if (template) opts.template = template;
       if (regions) opts.regions = regions;
       if (model) opts.model = model;
+      if (collection) opts.collection = collection;
 
       var LayoutView = this.getOption('layoutView', options) || jaffamvc.LayoutView;
 
