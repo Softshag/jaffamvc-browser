@@ -32,6 +32,15 @@ exports.umd =
 
   footer: "\n" + fs.readFileSync('./wrap/footer.js') + '\n'
 
+exports.umd_ext =
+  header: (filename) ->
+    o = _.pick(info,['name','version'])
+    o.year = (new Date).getFullYear()
+
+    _.template(fs.readFileSync('./wrap/header-ext.js','utf8'))(o) + '\n\n'
+
+  footer: "\n" + fs.readFileSync('./wrap/footer-ext.js') + '\n'
+
 
 exports.es6 =
   header: (filename) ->

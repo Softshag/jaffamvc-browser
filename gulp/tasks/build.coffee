@@ -46,4 +46,4 @@ gulp.task 'build-es6', ->
       indentSize: 2
   .pipe gulp.dest './dist'
 
-gulp.task 'build', ['build-es5','build-es6']
+gulp.task 'build', ['build-es5','build-es6', 'build-ext']

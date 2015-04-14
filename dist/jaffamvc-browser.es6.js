@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.1.0
+ * JaffaMVC.js 0.1.1
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.1.0";
+  JaffaMVC.version = "0.1.1";
   JaffaMVC.Debug = false;
 
 
@@ -112,6 +112,9 @@
 
   let __slice = Array.prototype.slice;
   let __has = Object.prototype.hasOwnProperty;
+  var __nativeBind = Function.prototype.bind;
+
+
   let utils = {
     callFunction: function(fn, ctx, args) {
       switch (args.length) {
@@ -192,6 +195,14 @@
     bindAll(obj, fns) {
       return utils.proxy(obj, obj, fns);
     },
+    bind: function(func, context) {
+      if (__nativeBind && func.bind === __nativeBind) return __nativeBind.apply(func, __slice.call(arguments, 1));
+      let args = __slice.call(arguments, 2);
+      let bound = function() {
+        return func.apply(context, args.concat(__slice(arguments)));
+      };
+      return bound;
+    },
     getOption(option, obj = {}) {
       let options = this.options || {};
       return obj[option] ||  options[option] || this[option];
@@ -237,7 +248,7 @@
       if (!Array.isArray(fns)) fns = [fns];
       fns.forEach(function(fn) {
         if (typeof to[fn] === 'function') {
-          from[fn] = to[fn].bind(to);
+          from[fn] = utils.bind(to[fn], to);
         }
       });
     },
@@ -262,6 +273,32 @@
       if (typeof obj[prop] === 'function')
         return obj[prop](...args);
       return obj[prop];
+    },
+    assign: Object.assign || function(obj) {
+      var args = __slice.call(arguments, 1),
+        i, k, o;
+      for (i = 0; i < args.length; i++) {
+        o = args[i];
+        for (k in o) {
+          if (!o.hasOwnProperty(k)) continue;
+          obj[k] = o[k];
+        }
+      }
+      return obj;
+    },
+    inherits: function(child, parent) {
+      for (var key in parent) {
+        if (Object.prototype.hasOwnProperty.call(parent, key))
+          child[key] = parent[key];
+      }
+
+      function Ctor() {
+        this.constructor = child;
+      }
+      Ctor.prototype = parent.prototype;
+      child.prototype = new Ctor();
+      child.__super__ = parent.prototype;
+      return child;
     }
 
   }
@@ -2310,7 +2347,7 @@
 
   JaffaMVC.ajax = ajax();
 
-  Object.assign(JaffaMVC, {
+  utils.assign(JaffaMVC, {
     Application: Application,
     Module: Module,
     RegionManager: RegionManager,

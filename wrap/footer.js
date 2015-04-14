@@ -3,7 +3,7 @@
 
   JaffaMVC.ajax = ajax();
 
-  Object.assign(JaffaMVC, {
+  utils.assign(JaffaMVC, {
     Application: Application,
     Module: Module,
     RegionManager: RegionManager,
