@@ -24,8 +24,9 @@ let ajax = function() {
     return e;
   };
 
-  let xmlRe = /^(?:application|text)\/xml/;
-  let jsonRe = /^application\/json/;
+  let xmlRe = /^(?:application|text)\/xml/,
+      jsonRe = /^application\/json/,
+      fileProto = /^file:/;
 
   let getData = function(accepts, xhr) {
     if (accepts == null) accepts = xhr.getResponseHeader('content-type');
@@ -38,10 +39,11 @@ let ajax = function() {
     }
   };
 
-  var isValid = function(xhr) {
+  var isValid = function(xhr, url) {
     return (xhr.status >= 200 && xhr.status < 300) ||
       (xhr.status === 304) ||
-      (xhr.status === 0 && window.location.protocol === 'file:')
+      (xhr.status === 0 && fileProto.test(url));
+      //(xhr.status === 0 && window.location.protocol === 'file:')
   };
 
   var end = function(xhr, options, resolve, reject) {
@@ -52,7 +54,7 @@ let ajax = function() {
       var data = getData(options.headers && options.headers.Accept, xhr);
 
       // Check for validity.
-      if (isValid(xhr)) {
+      if (isValid(xhr, options.url)) {
         if (options.success) options.success(data);
         if (resolve) resolve(data);
       } else {
