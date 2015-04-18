@@ -1,4 +1,4 @@
-/*global BaseClass, Boot */
+/*global BaseClass, Boot, debug */
 
 class Module extends BaseClass {
 	get startWithParent () {
@@ -28,14 +28,17 @@ class Module extends BaseClass {
 	}
 
 	start (options) {
+		debug('starting module: ' + this.name || 'undefined');
 		if (this.initializer.isInitialized) {
 			return Promise.resolve();
 		}
 		this.triggerMethod('before:start', options);
 		return this.initializer.boot(options)
 		.then((ret) => {
+			debug('starting submodule for: ' + this.name || 'undefined');
 			return this._startSubmodules();
 		}).then( () => {
+			debug('started module: ' + this.name || 'undefined');
 			this.triggerMethod('start', options);
 		});
 	}
@@ -44,15 +47,16 @@ class Module extends BaseClass {
 		if (!this.isRunning) {
 			return Promise.resolve();
 		}
-
+		debug('stopping module: ' + this.name);
 		this.triggerMethod('before:stop',options);
 		return this.finalizer.boot(options).then( (r) => {
+			debug('stopping submodules for ' + this.name)
 			return this._stopSubmodules(options);
 		}).then(() => {
 			// Reset intializers
 			this.initializer.reset();
 			this.finalizer.reset();
-
+			debug('stopped module:', name)
 			this.triggerMethod('stop',options);
 		});
 	}
@@ -70,7 +74,7 @@ class Module extends BaseClass {
 		if (typeof def !== 'function') {
 			Klass = Module.extend(def);
 		}
-
+		debug('defining module ', name, 'in', this.name);
 		this.modules[name] = new Klass(name, options, this.app || this);
 		return this.modules[name];
 	}

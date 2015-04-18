@@ -62,28 +62,16 @@
       if (this.router == null) {
         this.router = new jaffamvc.Router();
       }
-      console.log(route, name, callback)
+
       var self = this;
 
       this.router.route(route, name, function() {
         var args = slice.call(arguments);
 
-        var fn = function() {
-          if (typeof callback === 'function') {
-            return utils.callFunction(callback, self, args);
-          }
-        };
-
-
-        if (self.isRunning) {
-          fn();
-        } else {
-          self.start().then(function() {
-            fn();
-          })['catch'](function(err) {
-            self.app.trigger('error', err);
-          });
+        if (typeof callback === 'function') {
+          return utils.callFunction(callback, self, args);
         }
+
 
       });
     },

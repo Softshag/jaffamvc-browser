@@ -336,8 +336,9 @@
       return e;
     };
 
-    let xmlRe = /^(?:application|text)\/xml/;
-    let jsonRe = /^application\/json/;
+    let xmlRe = /^(?:application|text)\/xml/,
+      jsonRe = /^application\/json/,
+      fileProto = /^file:/;
 
     let getData = function(accepts, xhr) {
       if (accepts == null) accepts = xhr.getResponseHeader('content-type');
@@ -350,10 +351,11 @@
       }
     };
 
-    var isValid = function(xhr) {
+    var isValid = function(xhr, url) {
       return (xhr.status >= 200 && xhr.status < 300) ||
         (xhr.status === 304) ||
-        (xhr.status === 0 && window.location.protocol === 'file:')
+        (xhr.status === 0 && fileProto.test(url));
+      //(xhr.status === 0 && window.location.protocol === 'file:')
     };
 
     var end = function(xhr, options, resolve, reject) {
@@ -364,7 +366,7 @@
         var data = getData(options.headers && options.headers.Accept, xhr);
 
         // Check for validity.
-        if (isValid(xhr)) {
+        if (isValid(xhr, options.url)) {
           if (options.success) options.success(data);
           if (resolve) resolve(data);
         } else {
@@ -829,14 +831,17 @@
     }
 
     start(options) {
+      debug('starting module: ' + this.name || 'undefined');
       if (this.initializer.isInitialized) {
         return Promise.resolve();
       }
       this.triggerMethod('before:start', options);
       return this.initializer.boot(options)
         .then((ret) => {
+          debug('starting submodule for: ' + this.name || 'undefined');
           return this._startSubmodules();
         }).then(() => {
+          debug('started module: ' + this.name || 'undefined');
           this.triggerMethod('start', options);
         });
     }
@@ -845,15 +850,16 @@
       if (!this.isRunning) {
         return Promise.resolve();
       }
-
+      debug('stopping module: ' + this.name);
       this.triggerMethod('before:stop', options);
       return this.finalizer.boot(options).then((r) => {
+        debug('stopping submodules for ' + this.name)
         return this._stopSubmodules(options);
       }).then(() => {
         // Reset intializers
         this.initializer.reset();
         this.finalizer.reset();
-
+        debug('stopped module:', name)
         this.triggerMethod('stop', options);
       });
     }
@@ -871,7 +877,7 @@
       if (typeof def !== 'function') {
         Klass = Module.extend(def);
       }
-
+      debug('defining module ', name, 'in', this.name);
       this.modules[name] = new Klass(name, options, this.app || this);
       return this.modules[name];
     }
