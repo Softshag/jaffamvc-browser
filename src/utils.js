@@ -179,7 +179,7 @@ let utils = {
 	},
 	inherits: function (child, parent) {
 		for (var key in parent) {
-        if (Object.prototype.hasOwnProperty.call(parent, key)) 
+        if (Object.prototype.hasOwnProperty.call(parent, key))
           child[key] = parent[key];
     }
     function Ctor() {
@@ -196,8 +196,8 @@ let utils = {
 
 function debug () {
   if (JaffaMVC.Debug !== true) return;
-
+  var args = ['MVC: '].concat(__slice(arguments))
   return 'object' === typeof console
     && console.log
-    && Function.prototype.apply.call(console.log, console, arguments);
+    && Function.prototype.apply.call(console.log, console, args);
 }
