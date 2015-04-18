@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.1.4
+ * JaffaMVC.js 0.1.5
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.1.4";
+  JaffaMVC.version = "0.1.5";
   JaffaMVC.Debug = false;
 
 
@@ -990,7 +990,7 @@
       }
       this.triggerMethod("before:start", options);
       return this.initializer.boot(options).then(function(ret) {
-        debug("starting submodule for: " + _this16.name || "undefined");
+        debug("starting submodules for: " + _this16.name || "undefined");
         return _this16._startSubmodules();
       }).then(function() {
         debug("started module: " + _this16.name || "undefined");
@@ -1013,7 +1013,7 @@
         // Reset intializers
         _this16.initializer.reset();
         _this16.finalizer.reset();
-        debug("stopped module:", name);
+        debug("stopped module:", _this16.name);
         _this16.triggerMethod("stop", options);
       });
     };

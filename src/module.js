@@ -35,7 +35,7 @@ class Module extends BaseClass {
 		this.triggerMethod('before:start', options);
 		return this.initializer.boot(options)
 		.then((ret) => {
-			debug('starting submodule for: ' + this.name || 'undefined');
+			debug('starting submodules for: ' + this.name || 'undefined');
 			return this._startSubmodules();
 		}).then( () => {
 			debug('started module: ' + this.name || 'undefined');
@@ -56,7 +56,7 @@ class Module extends BaseClass {
 			// Reset intializers
 			this.initializer.reset();
 			this.finalizer.reset();
-			debug('stopped module:', name)
+			debug('stopped module:', this.name)
 			this.triggerMethod('stop',options);
 		});
 	}
