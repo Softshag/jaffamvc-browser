@@ -408,7 +408,7 @@
     if (JaffaMVC.Debug !== true) {
       return;
     }
-    var args = ["MVC: "].concat(__slice(arguments));
+    var args = ["MVC: "].concat(__slice.call(arguments));
     return "object" === typeof console && console.log && Function.prototype.apply.call(console.log, console, args);
   }
 
