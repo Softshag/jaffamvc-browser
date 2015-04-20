@@ -19,6 +19,9 @@
 
   "use strict";
 
+  var utils = jaffamvc.utils,
+    __slice = Array.prototype.slice;
+
 
   var _inherits = function(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -230,8 +233,7 @@
       }
     });
   })();
-  var utils = jaffamvc.utils;
-  var __slice = Array.prototype.slice;
+  /* global jaffamvc:true */
 
   var ViewModule = (function() {
 

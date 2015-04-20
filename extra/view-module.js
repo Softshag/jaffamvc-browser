@@ -1,5 +1,4 @@
-let utils = jaffamvc.utils;
-let __slice = Array.prototype.slice;
+/* global jaffamvc:true */
 
 const ViewModule = (function () {
 

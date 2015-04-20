@@ -19,3 +19,6 @@
 
   "use strict";
 
+  var utils = jaffamvc.utils,
+      __slice = Array.prototype.slice;
+
