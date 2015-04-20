@@ -121,5 +121,6 @@ const ViewModule = (function () {
     },
   });
 
+  return ViewModule;
 
 })();

@@ -357,6 +357,8 @@
         }
       }
     });
+
+    return ViewModule;
   })();
   /* global jaffamvc:true */
 
