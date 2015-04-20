@@ -59,6 +59,7 @@ class Module extends BaseClass {
 			// Reset intializers
 			this.initializer.reset();
 			this.finalizer.reset();
+			this.stopListening();
 			debug('stopped module:', this.name)
 			this.triggerMethod('stop',options);
 		}).catch((err) => {

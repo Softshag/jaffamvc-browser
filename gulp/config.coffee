@@ -21,6 +21,14 @@ exports.files = [
   'src/application.js'
 ]
 
+exports.extfiles = [
+  'extra/selectable.js'
+  'extra/view-module.js'
+  'extra/selectable-collection.js'
+  'extra/selectable-model.js'
+
+]
+
 exports.binary = info.name #+ "-" + info.version
 
 exports.umd =
@@ -39,16 +47,16 @@ exports.umd_ext =
 
     _.template(fs.readFileSync('./wrap/header-ext.js','utf8'))(o) + '\n\n'
 
-  footer: "\n" + fs.readFileSync('./wrap/footer-ext.js') + '\n'
+  footer: (filename) -> return "\n" + fs.readFileSync('./wrap/footer-ext.js') + '\n'
 
 
-exports.es6 =
-  header: (filename) ->
-    o = _.pick(info,['name','version'])
-    o.year = (new Date).getFullYear()
+# exports.es6 =
+#   header: (filename) ->
+#     o = _.pick(info,['name','version'])
+#     o.year = (new Date).getFullYear()
 
-    _.template(fs.readFileSync('./wrap/header-es6.js','utf8'))(o) + '\n\n'
+#     _.template(fs.readFileSync('./wrap/header-es6.js','utf8'))(o) + '\n\n'
 
-  footer: "\n" + fs.readFileSync('./wrap/footer-es6.js') + '\n'
+#   footer: "\n" + fs.readFileSync('./wrap/footer-es6.js') + '\n'
 
 exports.pkg = info

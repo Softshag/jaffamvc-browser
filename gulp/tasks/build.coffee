@@ -28,22 +28,23 @@ gulp.task 'build-es5', ->
       indentSize: 2
   .pipe gulp.dest './dist'
 
-gulp.task 'build-es6', ->
-  q = for file in config.files
-    gulp.src file
 
-  sq objectMode: yes, q...
-  .pipe concat config.binary + '.es6.js'
-  .pipe wrap config.es6
-  .pipe replace(/"use strict";/,"")
-  .pipe wrap config.umd
-  .pipe replace(/\*\s?jshint\s+[-\w\d:]+\s*?\*/g, "")
-  .pipe replace(/\*\s?global\s+[-\w\d\s,]+\s*?\*/g, "")
-  .pipe prettify
-    js:
-      preserveNewlines: yes
-      maxPreserveNewlines: 3
-      indentSize: 2
-  .pipe gulp.dest './dist'
+# gulp.task 'build-es6', ->
+#   q = for file in config.files
+#     gulp.src file
 
-gulp.task 'build', ['build-es5','build-es6', 'build-ext']
+#   sq objectMode: yes, q...
+#   .pipe concat config.binary + '.es6.js'
+#   .pipe wrap config.es6
+#   .pipe replace(/"use strict";/,"")
+#   .pipe wrap config.umd
+#   .pipe replace(/\*\s?jshint\s+[-\w\d:]+\s*?\*/g, "")
+#   .pipe replace(/\*\s?global\s+[-\w\d\s,]+\s*?\*/g, "")
+#   .pipe prettify
+#     js:
+#       preserveNewlines: yes
+#       maxPreserveNewlines: 3
+#       indentSize: 2
+#   .pipe gulp.dest './dist'
+
+gulp.task 'build', ['build-es5','build-ext']

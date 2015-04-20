@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.1.6
+ * JaffaMVC.js 0.1.7
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.1.6";
+  JaffaMVC.version = "0.1.7";
   JaffaMVC.Debug = false;
 
 
@@ -382,8 +382,7 @@
       for (i = 0; i < args.length; i++) {
         o = args[i];
         for (k in o) {
-          if (!o.hasOwnProperty(k)) continue;
-          obj[k] = o[k];
+          if (o.hasOwnProperty(k)) obj[k] = o[k];
         }
       }
       return obj;
@@ -1017,6 +1016,7 @@
         // Reset intializers
         _this16.initializer.reset();
         _this16.finalizer.reset();
+        _this16.stopListening();
         debug("stopped module:", _this16.name);
         _this16.triggerMethod("stop", options);
       })["catch"](function(err) {
@@ -2503,8 +2503,8 @@
     _inherits(Application, _Module);
 
     /**
-     * Create a new channel
-     * @param  {String} name Name of the module
+     * Create a or get a channel
+     * @param  {String} name Name of the channel
      * @return {JaffaMVC.Channel}
      *
      * @memberOf JaffaMVC.Application#
@@ -2601,6 +2601,8 @@
       delete this.channels;
       this._regionManager.unproxyObject(this);
       this._regionManager.destroy();
+      this.stopHistory();
+
       delete this._regionManager;
     };
 

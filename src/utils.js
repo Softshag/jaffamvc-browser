@@ -166,13 +166,11 @@ let utils = {
 		return obj[prop];
 	},
 	assign: Object.assign || function (obj) {
-		var args = __slice.call(arguments, 1),
-      i, k, o;
+		var args = __slice.call(arguments, 1), i, k, o;
     for (i = 0; i < args.length; i++) {
       o = args[i];
       for (k in o) {
-        if (!o.hasOwnProperty(k)) continue;
-        obj[k] = o[k];
+        if (o.hasOwnProperty(k)) obj[k] = o[k];
       }
     }
     return obj;

@@ -31,8 +31,8 @@ class Application extends Module {
   }
 
   /**
-   * Create a new channel
-   * @param  {String} name Name of the module
+   * Create a or get a channel
+   * @param  {String} name Name of the channel
    * @return {JaffaMVC.Channel}
    *
    * @memberOf JaffaMVC.Application#
@@ -124,6 +124,8 @@ class Application extends Module {
     delete this.channels;
     this._regionManager.unproxyObject(this);
     this._regionManager.destroy();
+    this.stopHistory();
+
     delete this._regionManager;
 
   }
