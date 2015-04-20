@@ -41,7 +41,7 @@ class Module extends BaseClass {
 			debug('started module: ' + this.name || 'undefined');
 			this.triggerMethod('start', options);
 		}).catch((err) => {
-			this.app.trigger('error', err);
+			this.trigger('error', err);
 			return Promise.reject(err);
 		});
 	}
@@ -63,7 +63,7 @@ class Module extends BaseClass {
 			debug('stopped module:', this.name)
 			this.triggerMethod('stop',options);
 		}).catch((err) => {
-			this.app.trigger('error', err)
+			this.trigger('error', err)
 			return Promise.reject(err);
 		});
 	}

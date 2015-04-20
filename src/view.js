@@ -75,7 +75,7 @@ class View extends NativeView {
         this.el.innerHTML = templ;
         this.delegateEvents();
         this.triggerMethod('render', this);
-      });
+      }, (e) => { throw e; });
     } else {
       this.delegateEvents();
       this.triggerMethod('render', this);
