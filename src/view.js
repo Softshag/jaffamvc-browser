@@ -311,7 +311,7 @@ class View extends NativeView {
     let c = {}, m = {}, e = {}, k, v;
     for (k in obj) {
       let [ev,t] = k.split(' ');
-      ev = ev.trim(), t = t.trim(), v = obj[k];
+      ev = ev.trim(), t = t ? t.trim() : "", v = obj[k];
       if (t === 'collection') {
         c[ev] = v;
       } else if (t === 'model') {

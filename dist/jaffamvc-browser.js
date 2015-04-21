@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.1.10
+ * JaffaMVC.js 0.1.11
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.1.10";
+  JaffaMVC.version = "0.1.11";
   JaffaMVC.Debug = false;
 
 
@@ -1974,7 +1974,7 @@
         var ev = _k$split2[0];
         var t = _k$split2[1];
 
-        ev = ev.trim(), t = t.trim(), v = obj[k];
+        ev = ev.trim(), t = t ? t.trim() : "", v = obj[k];
         if (t === "collection") {
           c[ev] = v;
         } else if (t === "model") {
