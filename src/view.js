@@ -110,14 +110,18 @@ class View extends NativeView {
 
     events = this.normalizeUIKeys(events);
 
+
+
+    let {e} = this.filterEvents(events);
+
     var triggers = this._configureTriggers();
 
     var combined = {};
 
-    Object.assign(combined, events, triggers);
+    utils.assign(combined, e, triggers);
 
     super.delegateEvents(combined);
-
+    this.bindDataEvents(events);
   }
 
   /**
@@ -128,6 +132,7 @@ class View extends NativeView {
    */
   undelegateEvents() {
     this.unbindUIElements();
+    this.unbindDataEvents();
     super.undelegateEvents();
   }
 
@@ -225,6 +230,45 @@ class View extends NativeView {
 
   }
 
+  bindDataEvents (events) {
+    let {c,m} = this.filterEvents(events);
+    console.log('model',m,this.events)
+    this._dataEvents = {};
+    let fn = (item, ev) => {
+
+      if (!this[item]) return {};
+      let out = {}, k, f;
+
+      for (k in ev) {
+
+        f = utils.bind(ev[k], this);
+        this[item].on(k,f);
+        //this.listenTo(this[item],k, f);
+        out[item+":"+k] = f;
+      }
+
+      return out;
+    };
+
+    utils.assign(this._dataEvents,
+      fn('model',m),
+      fn('collection',c));
+  }
+
+  unbindDataEvents () {
+    if (!this._dataEvents) return;
+    let k, v;
+    for (k in this._dataEvents) {
+      v = this._dataEvents[k];
+      let [item, ev] = k.split(':');
+      if (!this[item]) continue;
+      console.log(item,ev)
+      this[item].off(ev, v);
+      //this.stopListening(this[item],ev, v);
+    }
+    delete this._dataEvents;
+  }
+
   unbindUIElements() {
   }
 
@@ -261,6 +305,22 @@ class View extends NativeView {
     }
 
     return o;
+  }
+  filterEvents (obj) {
+    /*jshint -W030 */
+    let c = {}, m = {}, e = {}, k, v;
+    for (k in obj) {
+      let [ev,t] = k.split(' ');
+      ev = ev.trim(), t = t.trim(), v = obj[k];
+      if (t === 'collection') {
+        c[ev] = v;
+      } else if (t === 'model') {
+        m[ev] = v;
+      } else {
+        e[ev] = v;
+      }
+    }
+    return {c,m,e};
   }
 
 }

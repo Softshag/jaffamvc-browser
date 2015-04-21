@@ -232,6 +232,8 @@
         }
       }
     });
+
+    return Selectable;
   })();
   /* global jaffamvc:true */
 
@@ -367,6 +369,8 @@
       _classCallCheck(this, SelectableCollection);
 
       options = options || {};
+      _jaffamvc$Collection.call(this, models, options);
+
       this.options = options;
 
       if (this.getOption("multi") === true) {
@@ -375,7 +379,7 @@
         this._select = new SingleSelect(this);
       }
 
-      _jaffamvc$Collection.call(this, models, options);
+      utils.assign(this, this._select);
     }
 
     _inherits(SelectableCollection, _jaffamvc$Collection);
@@ -385,6 +389,7 @@
 
       if (!model._select) {
         model._select = new Selectable(model);
+        utils.assign(model, model._select);
       }
     };
 
@@ -398,6 +403,7 @@
       _jaffamvc$Model.call(this, models, options);
 
       this._select = new Selectable(this);
+      utils.assign(this, this._select);
     }
 
     _inherits(SelectableModel, _jaffamvc$Model);

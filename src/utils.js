@@ -170,7 +170,7 @@ let utils = {
     for (i = 0; i < args.length; i++) {
       o = args[i];
       for (k in o) {
-        if (o.hasOwnProperty(k)) obj[k] = o[k];
+        obj[k] = o[k];
       }
     }
     return obj;

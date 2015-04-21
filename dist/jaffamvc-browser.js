@@ -382,7 +382,7 @@
       for (i = 0; i < args.length; i++) {
         o = args[i];
         for (k in o) {
-          if (o.hasOwnProperty(k)) obj[k] = o[k];
+          obj[k] = o[k];
         }
       }
       return obj;
@@ -1735,13 +1735,18 @@
 
       events = this.normalizeUIKeys(events);
 
+      var _filterEvents = this.filterEvents(events);
+
+      var e = _filterEvents.e;
+
       var triggers = this._configureTriggers();
 
       var combined = {};
 
-      Object.assign(combined, events, triggers);
+      utils.assign(combined, e, triggers);
 
       _NativeView.prototype.delegateEvents.call(this, combined);
+      this.bindDataEvents(events);
     };
 
     /**
@@ -1753,6 +1758,7 @@
 
     View.prototype.undelegateEvents = function undelegateEvents() {
       this.unbindUIElements();
+      this.unbindDataEvents();
       _NativeView.prototype.undelegateEvents.call(this);
     };
 
@@ -1854,6 +1860,61 @@
       });
     };
 
+    View.prototype.bindDataEvents = function bindDataEvents(events) {
+      var _this16 = this;
+
+      var _filterEvents = this.filterEvents(events);
+
+      var c = _filterEvents.c;
+      var m = _filterEvents.m;
+
+      console.log("model", m, this.events);
+      this._dataEvents = {};
+      var fn = function(item, ev) {
+
+        if (!_this16[item]) return {};
+        var out = {},
+          k = undefined,
+          f = undefined;
+
+        for (k in ev) {
+
+          f = utils.bind(ev[k], _this16);
+          _this16[item].on(k, f);
+          //this.listenTo(this[item],k, f);
+          out[item + ":" + k] = f;
+        }
+
+        return out;
+      };
+
+      utils.assign(this._dataEvents, fn("model", m), fn("collection", c));
+    };
+
+    View.prototype.unbindDataEvents = function unbindDataEvents() {
+      if (!this._dataEvents) {
+        return;
+      }
+      var k = undefined,
+        v = undefined;
+      for (k in this._dataEvents) {
+        v = this._dataEvents[k];
+
+        var _k$split = k.split(":");
+
+        var _k$split2 = _slicedToArray(_k$split, 2);
+
+        var item = _k$split2[0];
+        var ev = _k$split2[1];
+
+        if (!this[item]) continue;
+        console.log(item, ev);
+        this[item].off(ev, v);
+        //this.stopListening(this[item],ev, v);
+      }
+      delete this._dataEvents;
+    };
+
     View.prototype.unbindUIElements = function unbindUIElements() {};
 
     /**
@@ -1896,6 +1957,37 @@
       }
 
       return o;
+    };
+
+    View.prototype.filterEvents = function filterEvents(obj) {
+      //
+      var c = {},
+        m = {},
+        e = {},
+        k = undefined,
+        v = undefined;
+      for (k in obj) {
+        var _k$split = k.split(" ");
+
+        var _k$split2 = _slicedToArray(_k$split, 2);
+
+        var ev = _k$split2[0];
+        var t = _k$split2[1];
+
+        ev = ev.trim(), t = t.trim(), v = obj[k];
+        if (t === "collection") {
+          c[ev] = v;
+        } else if (t === "model") {
+          m[ev] = v;
+        } else {
+          e[ev] = v;
+        }
+      }
+      return {
+        c: c,
+        m: m,
+        e: e
+      };
     };
 
     _createClass(View, {

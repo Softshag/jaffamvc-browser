@@ -269,6 +269,30 @@ describe('View', function() {
 
   });
 
+  describe('Events', function () {
+    it('should parse model events', function () {
+      var spy = jasmine.createSpy('model:change');
+      var view = new (JaffaMVC.View.extend({
+        template: '<button class="button">OK</button>',
+        events: {
+          'change model': spy
+        },
+        ui: {
+          button: '.button'
+        },
+        model: new JaffaMVC.Model(),
+      }));
+
+      //view.render();
+
+      view.model.set('key', 'value');
+
+      expect(spy.calls.count()).toEqual(1);
+
+      //view.destroy();
+    });
+  })
+
 
 
 
