@@ -15,6 +15,9 @@ class SelectableCollection extends jaffamvc.Collection {
     }
 
     utils.assign(this, this._select);
+
+    this.select = this._select.select;
+    this.deselect = this._select.deselect;
   }
   _addReference (model, options) {
     super(model, options)
