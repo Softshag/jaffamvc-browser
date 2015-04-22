@@ -90,7 +90,7 @@ let utils = {
     if (__nativeBind && func.bind === __nativeBind) return __nativeBind.apply(func, __slice.call(arguments, 1));
     let args = __slice.call(arguments, 2);
     let bound = function () {
-      return func.apply(context, args.concat(__slice(arguments)));
+      return func.apply(context, args.concat(__slice.call(arguments)));
     };
     return bound;
   },
@@ -165,15 +165,18 @@ let utils = {
 			return obj[prop](...args);
 		return obj[prop];
 	},
-	assign: Object.assign || function (obj) {
-		var args = __slice.call(arguments, 1), i, k, o;
+  extend: function (obj) {
+    var args = __slice.call(arguments, 1), i, k, o;
     for (i = 0; i < args.length; i++) {
-      o = args[i];
+      o = Object(args[i]);
       for (k in o) {
         obj[k] = o[k];
       }
     }
     return obj;
+  },
+	assign: Object.assign || function (obj) {
+    return utils.extend.apply(undefined, __slice.call(arguments));
 	},
 	inherits: function (child, parent) {
 		for (var key in parent) {

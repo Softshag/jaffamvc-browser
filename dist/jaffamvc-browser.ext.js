@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.Ext.js 0.1.11
+ * JaffaMVC.Ext.js 0.2.0
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -379,10 +379,7 @@
         this._select = new SingleSelect(this);
       }
 
-      utils.assign(this, this._select);
-
-      this.select = this._select.select;
-      this.deselect = this._select.deselect;
+      utils.extend(this, this._select);
     }
 
     _inherits(SelectableCollection, _jaffamvc$Collection);
@@ -392,7 +389,7 @@
 
       if (!model._select) {
         model._select = new Selectable(model);
-        utils.assign(model, model._select);
+        utils.extend(model, model._select);
       }
     };
 
@@ -406,10 +403,7 @@
       _jaffamvc$Model.call(this, models, options);
 
       this._select = new Selectable(this);
-      utils.assign(this, this._select);
-
-      this.select = this._select.select;
-      this.deselect = this._select.deselect;
+      utils.extend(this, this._select);
     }
 
     _inherits(SelectableModel, _jaffamvc$Model);

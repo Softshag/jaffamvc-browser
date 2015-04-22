@@ -3,13 +3,7 @@
  * JaffaMVC
  * @namespace JaffaMVC
  */
-Object.assign(JaffaMVC,{
-  Events:Backbone.Events,
-  History: Backbone.History,
-  Model: Backbone.Model,
-  Collection: Backbone.Collection,
-  Router: Backbone.Router
-});
+
 
 /** Error classes */
 class JaffaError extends Error {}

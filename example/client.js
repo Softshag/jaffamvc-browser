@@ -1,5 +1,7 @@
+Function.prototype.bind = null;
 JaffaMVC.Debug = true;
 //Backbone.$ = JaffaMVC.$ = $;
+console.log(JaffaMVC)
 var html = '<div style="height:100px;background-color:red;"><button class="button">OK</button><input class="input"></div>';
 JaffaMVC.$(function () {
 
@@ -11,6 +13,14 @@ JaffaMVC.$(function () {
   });
 
   app.start();
+
+  var Col = JaffaMVC.SelectableCollection.extend({
+    model: JaffaMVC.SelectableModel
+  });
+
+  var col = new Col();
+  var mod = new JaffaMVC.SelectableModel();
+
 
   var view = new JaffaMVC.View({
     template: function (data) {

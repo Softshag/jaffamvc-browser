@@ -176,7 +176,7 @@ class View extends NativeView {
     if (typeof triggerDef === 'string')
       triggerDef = {event: triggerDef}
 
-    let options = Object.assign({
+    let options = utils.assign({
       preventDefault: true,
       stopPropagation: true
     }, triggerDef);
@@ -232,7 +232,7 @@ class View extends NativeView {
 
   bindDataEvents (events) {
     let {c,m} = this.filterEvents(events);
-    console.log('model',m,this.events)
+
     this._dataEvents = {};
     let fn = (item, ev) => {
 
@@ -240,10 +240,8 @@ class View extends NativeView {
       let out = {}, k, f;
 
       for (k in ev) {
-
         f = utils.bind(ev[k], this);
         this[item].on(k,f);
-        //this.listenTo(this[item],k, f);
         out[item+":"+k] = f;
       }
 
@@ -325,7 +323,7 @@ class View extends NativeView {
 
 }
 
-Object.assign(View.prototype, {
+utils.assign(View.prototype, {
   getOption: utils.getOption,
   triggerMethod: utils.triggerMethod
 });

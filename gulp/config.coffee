@@ -18,6 +18,8 @@ exports.files = [
   'src/view.js'
   'src/layout-view.js'
   'src/collection-view.js'
+  'src/collection.js'
+  'src/model.js'
   'src/application.js'
 ]
 

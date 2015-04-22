@@ -41,7 +41,7 @@ class BaseClass {
 
 BaseClass.extend = Backbone.extend;
 // Mixin events
-Object.assign(BaseClass.prototype, Backbone.Events, {
+utils.assign(BaseClass.prototype, Backbone.Events, {
   getOption: utils.getOption,
   triggerMethod: utils.triggerMethod
 });

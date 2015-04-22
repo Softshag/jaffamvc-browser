@@ -1,6 +1,5 @@
 /* global jaffamvc:true */
 
-
 class SelectableCollection extends jaffamvc.Collection {
   constructor(models, options) {
     options = options||{};
@@ -14,17 +13,15 @@ class SelectableCollection extends jaffamvc.Collection {
       this._select = new SingleSelect(this);
     }
 
-    utils.assign(this, this._select);
+    utils.extend(this, this._select);
 
-    this.select = this._select.select;
-    this.deselect = this._select.deselect;
   }
   _addReference (model, options) {
     super(model, options)
 
     if (!model._select) {
       model._select = new Selectable(model);
-      utils.assign(model, model._select);
+      utils.extend(model, model._select);
     }
   }
 }

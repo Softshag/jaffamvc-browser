@@ -10,7 +10,7 @@ replace = require('gulp-replace')
 
 config = require '../config'
 
-gulp.task 'build-ext', ->
+gulp.task 'build:ext', ->
   q = for file in config.extfiles
     gulp.src file
   sq objectMode: yes, q...

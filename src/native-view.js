@@ -104,10 +104,11 @@ class NativeView extends BBView {
 
       let match = key.match(/^(\S+)\s*(.*)$/);
       // Set delegates immediately and defer event on this.el
+      let boundFn = utils.bind(method, this);
       if (match[2]) {
-        this.delegate(match[1], match[2], method.bind(this));
+        this.delegate(match[1], match[2], boundFn);
       } else {
-        dels.push([match[1], method.bind(this)]);
+        dels.push([match[1], boundFn]);
       }
     }
 

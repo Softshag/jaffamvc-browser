@@ -1,5 +1,8 @@
 
-  Application.extend = View.extend = CollectionView.extend = LayoutView.extend = Region.extend = RegionManager.extend = Module.extend = BaseClass.extend = Backbone.extend;
+  [Application,Module,BaseClass,View,CollectionView,LayoutView,
+   Region,RegionManager,Collection,Model,List].forEach(function (elm) {
+    elm.extend = Backbone.extend
+   });
 
   JaffaMVC.ajax = ajax();
 
@@ -15,7 +18,12 @@
     List: List,
     Object: BaseClass,
     utils: utils,
-    NativeView: NativeView
+    NativeView: NativeView,
+    Collection: Collection,
+    Model: Model,
+    Events:Backbone.Events,
+    History: Backbone.History,
+    Router: Backbone.Router
   });
 
   return JaffaMVC;

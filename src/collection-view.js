@@ -159,7 +159,7 @@ class CollectionView extends View {
       model: this.model,
       collection: this.collection
     });
-    
+
     utils.triggerMethodOn(view,'before:show');
     this._container.appendChild(view.render().el);
     utils.triggerMethodOn(view,'show');
@@ -170,11 +170,11 @@ class CollectionView extends View {
     if (!this._emptyView) return;
 
     if (typeof this._emptyView.destroy === 'function') {
-      this._emptyView.destroy();  
+      this._emptyView.destroy();
     } else if (typeof this._emptyView.remove === 'function') {
       this._emptyView.remove();
     }
-    
+
     delete this._emptyView;
 
     this._container.innerHtml = '';
@@ -209,7 +209,7 @@ class CollectionView extends View {
     let View = this.getOption('childView') || JaffaMVC.View,
       options = this.getOption('childViewOptions') || {};
 
-    return new View(Object.assign({
+    return new View(utils.assign({
       model: model
     }, options));
   }

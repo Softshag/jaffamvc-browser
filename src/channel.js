@@ -133,4 +133,4 @@ class Channel extends BaseClass {
 }
 
 
-Object.assign(Channel.prototype, Commands, Request);
+utils.assign(Channel.prototype, Commands, Request);
