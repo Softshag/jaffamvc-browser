@@ -1,6 +1,6 @@
 {
   "name": "jaffamvc-browser",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "",
   "main": "dist/jaffamvc-browser.js",
   "scripts": {
