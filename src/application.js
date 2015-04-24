@@ -62,7 +62,7 @@ class Application extends Module {
     }
 
     if (Backbone.history) {
-      this.trigger('before:history:start', options);
+      this.trigger('before:history:start', Backbone.history, options);
       Backbone.history.start(options);
       this.trigger('history:start', options);
     }

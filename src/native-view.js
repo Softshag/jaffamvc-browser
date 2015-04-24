@@ -151,7 +151,7 @@ class NativeView extends BBView {
       listener(e);
     };
     /*jshint bitwise: false*/
-    let useCap = ~unbubblebles.indexOf(eventName);
+    let useCap = !!~unbubblebles.indexOf(eventName);
 
     elementAddEventListener.call(this.el, eventName, handler, useCap);
     this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});

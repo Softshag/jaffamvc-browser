@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.3
+ * JaffaMVC.js 0.2.4
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.3";
+  JaffaMVC.version = "0.2.4";
   JaffaMVC.Debug = false;
 
 
@@ -1563,7 +1563,7 @@
         listener(e);
       };
       /*jshint bitwise: false*/
-      var useCap = ~unbubblebles.indexOf(eventName);
+      var useCap = !!~unbubblebles.indexOf(eventName);
 
       elementAddEventListener.call(this.el, eventName, handler, useCap);
       this._domEvents.push({
@@ -1976,7 +1976,7 @@
         } else if (t === "model") {
           m[ev] = v;
         } else {
-          e[ev] = v;
+          e[k] = v;
         }
       }
       return {
@@ -2658,7 +2658,7 @@
       }
 
       if (Backbone.history) {
-        this.trigger("before:history:start", options);
+        this.trigger("before:history:start", Backbone.history, options);
         Backbone.history.start(options);
         this.trigger("history:start", options);
       }

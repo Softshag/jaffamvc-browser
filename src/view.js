@@ -315,7 +315,7 @@ class View extends NativeView {
       } else if (t === 'model') {
         m[ev] = v;
       } else {
-        e[ev] = v;
+        e[k] = v;
       }
     }
     return {c,m,e};
