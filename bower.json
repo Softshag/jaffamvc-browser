@@ -1,0 +1,31 @@
+{
+  "name": "jaffamvc-browser",
+  "version": "0.2.0",
+  "homepage": "https://github.com/Softshag/jaffamvc-browser",
+  "authors": [
+    "Softshag & Me <admin@softshag.dk>"
+  ],
+  "main": "dist/jaffamvc-browser.bundle.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src",
+    "gulp",
+    "specs",
+    "wrap",
+    "extra",
+    "docs"
+  ],
+  "dependencies": {
+    "exoskeleton": "~0.7.0"
+  }
+}
