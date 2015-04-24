@@ -12,7 +12,7 @@ class Module extends BaseClass {
 	}
 
 	constructor (name, options, app) {
-		Object.assign(this, {options, name, app});
+		utils.assign(this, {options, name, app});
 		if (this.options && this.options.hasOwnProperty('startWithParent')) {
 			this.startWithParent = this.options.startWithParent;
 		}

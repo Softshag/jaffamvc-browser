@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.2
+ * JaffaMVC.js 0.2.3
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.2";
+  JaffaMVC.version = "0.2.3";
   JaffaMVC.Debug = false;
 
 
@@ -956,7 +956,7 @@
     function Module(name, options, app) {
       _classCallCheck(this, Module);
 
-      Object.assign(this, {
+      utils.assign(this, {
         options: options,
         name: name,
         app: app
@@ -2763,7 +2763,7 @@
 }));
 
 /*!
- * JaffaMVC.Ext.js 0.2.2
+ * JaffaMVC.Ext.js 0.2.3
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
