@@ -6,11 +6,11 @@ gulp.task 'default', ['lint','build:bundle','test','uglify','docs']
 
 
 gulp.task 'bump', ->
-  gulp.src('./package.json')
+  gulp.src ['./package.json', 'bower.json']
   .pipe bump()
   .pipe gulp.dest './'
 
 gulp.task 'bump:minor', ->
-  gulp.src './package.json'
+  gulp.src ['./package.json', 'bower.json']
   .pipe bump type: 'minor'
   .pipe gulp.dest './'

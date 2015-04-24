@@ -21,10 +21,12 @@ class Module extends BaseClass {
 
 	addInitializer(name, fn, ctx) {
 		this.initializer.phase(name, fn, ctx||this);
+		return this;
 	}
 
 	addFinalizer(name, fn, ctx) {
 		this.finalizer.phase(name, fn, ctx||this)
+		return this;
 	}
 
 	start (options) {
