@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.Ext.js 0.2.5
+ * JaffaMVC.Ext.js 0.2.6
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -325,7 +325,7 @@
         }
 
         this.listenTo(this.layout, "show", function() {
-          this.regions = this.layout.regions;
+          //this.regions = this.layout.regions;
           this.trigger("layout:show");
         });
 

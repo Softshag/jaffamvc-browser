@@ -256,4 +256,28 @@ describe('Module', function() {
     });
   });
 
+  describe('Submodules', function() {
+    var module;
+    beforeEach(function () {
+      module = new JaffaMVC.Module();
+    });
+
+    it('should define submodule', function() {
+      var submodule = module.module('submodule',{});
+
+      expect(submodule).toEqual(jasmine.any(JaffaMVC.Module));
+      expect(submodule.name).toEqual('submodule');
+
+    });
+    it('should define bind submodule to module', function() {
+      var submodule = module.module('submodule',{},{
+        bind: true
+      });
+
+      expect(submodule).toEqual(jasmine.any(JaffaMVC.Module));
+      expect(submodule.name).toEqual('submodule');
+      expect(module.submodule).toEqual(submodule)
+    });
+  });
+
 });

@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.5
+ * JaffaMVC.js 0.2.6
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.5";
+  JaffaMVC.version = "0.2.6";
   JaffaMVC.Debug = false;
 
 
@@ -1039,8 +1039,16 @@
         Klass = Module.extend(def);
       }
       debug("defining module ", name, "in", this.name);
-      this.modules[name] = new Klass(name, options, this.app || this);
-      return this.modules[name];
+      var mod = this.modules[name] = new Klass(name, options, this.app || this);
+
+      var b = undefined;
+      if (b = options.bind) {
+        b = typeof b === "string" ? b : name;
+        console.log("B", b);
+        this[b] = mod;
+      }
+
+      return mod;
     };
 
     Module.prototype.removeModule = function removeModule(name) {
@@ -2763,7 +2771,7 @@
 }));
 
 /*!
- * JaffaMVC.Ext.js 0.2.5
+ * JaffaMVC.Ext.js 0.2.6
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -3089,7 +3097,7 @@
         }
 
         this.listenTo(this.layout, "show", function() {
-          this.regions = this.layout.regions;
+          //this.regions = this.layout.regions;
           this.trigger("layout:show");
         });
 

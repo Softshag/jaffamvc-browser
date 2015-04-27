@@ -84,8 +84,16 @@ class Module extends BaseClass {
 			Klass = Module.extend(def);
 		}
 		debug('defining module ', name, 'in', this.name);
-		this.modules[name] = new Klass(name, options, this.app || this);
-		return this.modules[name];
+		let mod = this.modules[name] = new Klass(name, options, this.app || this);
+
+		let b;
+		if ((b = options.bind)) {
+			b = (typeof b === 'string') ? b : name;
+			console.log('B', b)
+			this[b] = mod;
+		}
+
+		return mod;
 	}
 
 	removeModule (name) {

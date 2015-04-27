@@ -84,7 +84,7 @@ const ViewModule = (function () {
       }
 
       this.listenTo(this.layout, 'show', function () {
-        this.regions = this.layout.regions;
+        //this.regions = this.layout.regions;
         this.trigger('layout:show');
       });
 
