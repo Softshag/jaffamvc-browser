@@ -77,21 +77,21 @@ const ViewModule = (function () {
 
       this.listenTo(this.layout, 'destroy', this.stop);
 
+      this.listenTo(this.layout, 'show', function () {
+        this.triggerMethod('layout:show');
+      });
+
+
       var autoRender = this.getOption('autoRender', options);
 
       if (autoRender === false) {
         return;
       }
 
-      this.listenTo(this.layout, 'show', function () {
-        //this.regions = this.layout.regions;
-        this.trigger('layout:show');
-      });
-
       var region = this.getOption('region', options);
 
       if (region != null) {
-        region.show(this.layout);
+        this.showInRegion(region);
       }
     },
     initViews: function () {},
