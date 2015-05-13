@@ -190,7 +190,18 @@ let utils = {
     child.prototype = new Ctor();
     child.__super__ = parent.prototype;
     return child;
-	}
+	},
+
+  deferred: function () {
+    let resolve, reject, promise = new Promise(function (res, rej) {
+      resolve = res;
+      reject = rej;
+    });
+    return {resolve, reject, done: function (err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }};
+  }
 
 }
 
