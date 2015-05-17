@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.7
+ * JaffaMVC.js 0.2.8
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.7";
+  JaffaMVC.version = "0.2.8";
   JaffaMVC.Debug = false;
 
 
@@ -398,22 +398,19 @@
     },
 
     deferred: function deferred() {
-      var resolve = undefined,
-        reject = undefined,
-        promise = new Promise(function(res, rej) {
-          resolve = res;
-          reject = rej;
-        });
-      return {
-        resolve: resolve,
-        reject: reject,
-        done: function done(err, result) {
-          if (err) {
-            return reject(err);
-          }
-          resolve(result);
-        }
+      var ret = {};
+
+      ret.promise = new Promise(function(resolve, reject) {
+        ret.resolve = resolve;
+        ret.reject = reject;
+      });
+
+      ret.done = function(err, result) {
+        if (err) return ret.reject(err);
+        ret.resolve(result);
       };
+
+      return ret;
     }
 
   };
@@ -2790,7 +2787,7 @@
 }));
 
 /*!
- * JaffaMVC.Ext.js 0.2.7
+ * JaffaMVC.Ext.js 0.2.8
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.

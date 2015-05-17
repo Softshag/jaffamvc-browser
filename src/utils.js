@@ -193,14 +193,19 @@ let utils = {
 	},
 
   deferred: function () {
-    let resolve, reject, promise = new Promise(function (res, rej) {
-      resolve = res;
-      reject = rej;
+    let ret = {};
+
+    ret.promise = new Promise(function (resolve, reject) {
+      ret.resolve = resolve;
+      ret.reject = reject;
     });
-    return {resolve, reject, done: function (err, result) {
-      if (err) return reject(err);
-      resolve(result);
-    }};
+
+    ret.done = function (err, result) {
+      if (err) return ret.reject(err);
+      ret.resolve(result);
+    };
+
+    return ret;
   }
 
 }
