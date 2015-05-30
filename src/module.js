@@ -98,17 +98,19 @@ class Module extends BaseClass {
 
 	removeModule (name) {
 		let module = this.module(name);
-		if (!module) return;
+		if (!module) return utils.Promise.resolve();
 
-		module.stop().then(() => {
+		return module.stop().then(() => {
 			module.destroy();
 		});
 	}
 
 	removeAllModules () {
+		var q = [];
 		for (var key in this.modules) {
-			this.removeModule(key);
+			q.push(this.removeModule(key));
 		}
+		return utils.Promise.all(q);
 	}
 
 	destroy () {
