@@ -63,13 +63,15 @@ const ViewModule = (function () {
       var template = this.getOption('template', options),
         regions = this.getOption('regions', options),
         model = this.getOption('model', options),
-        collection = this.getOption('collection', options);
+        collection = this.getOption('collection', options),
+        el = this.getOption('el', options);
 
       var opts = {};
       if (template) opts.template = template;
       if (regions) opts.regions = regions;
       if (model) opts.model = model;
       if (collection) opts.collection = collection;
+      if (el) opts.el = el;
 
       var LayoutView = this.getOption('layoutView', options) || jaffamvc.LayoutView;
 
