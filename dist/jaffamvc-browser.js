@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.9
+ * JaffaMVC.js 0.2.10
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.9";
+  JaffaMVC.version = "0.2.10";
   JaffaMVC.Debug = false;
 
 
