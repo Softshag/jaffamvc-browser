@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.Ext.js 0.2.10
+ * JaffaMVC.Ext.js 0.2.11
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -297,7 +297,22 @@
         });
       }),
       showInRegion: function showInRegion(region) {
-        region.show(this.layout);
+        var _this = this;
+
+        var defer = utils.deferred();
+
+        this.listenToOnce(this.layout, "show", function() {
+          _this.triggerMethod("show");
+          defer.resolve();
+        });
+
+        try {
+          region.show(this.layout);
+        } catch (e) {
+          defer.reject(e);
+        }
+
+        return defer.promise;
       },
       // ------------------------
       initLayout: function initLayout(options) {
@@ -306,7 +321,7 @@
           model = this.getOption("model", options),
           collection = this.getOption("collection", options),
           el = this.getOption("el", options),
-          layoutOptions = this.getOptions("layoutOptions", options);
+          layoutOptions = this.getOption("layoutOptions", options);
 
         var opts = {};
         if (template) opts.template = template;

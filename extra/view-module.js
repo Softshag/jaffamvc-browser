@@ -56,7 +56,20 @@ const ViewModule = (function () {
       });
     },
     showInRegion: function (region) {
-      region.show(this.layout);
+      let defer = utils.deferred();
+
+      this.listenToOnce(this.layout, 'show', () => {
+        this.triggerMethod('show');
+        defer.resolve();
+      });
+
+      try {
+        region.show(this.layout);
+      } catch (e) {
+        defer.reject(e);
+      }
+
+      return defer.promise;
     },
     // ------------------------
     initLayout: function (options) {
@@ -65,7 +78,7 @@ const ViewModule = (function () {
         model = this.getOption('model', options),
         collection = this.getOption('collection', options),
         el = this.getOption('el', options),
-        layoutOptions = this.getOptions('layoutOptions', options);
+        layoutOptions = this.getOption('layoutOptions', options);
 
       var opts = {};
       if (template) opts.template = template;
