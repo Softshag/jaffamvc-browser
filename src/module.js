@@ -98,7 +98,7 @@ class Module extends BaseClass {
 
 	removeModule (name) {
 		let module = this.module(name);
-		if (!module) return utils.Promise.resolve();
+		if (!module) return Promise.resolve();
 
 		return module.stop().then(() => {
 			module.destroy();
@@ -110,7 +110,7 @@ class Module extends BaseClass {
 		for (var key in this.modules) {
 			q.push(this.removeModule(key));
 		}
-		return utils.Promise.all(q);
+		return Promise.all(q);
 	}
 
 	destroy () {
