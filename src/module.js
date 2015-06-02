@@ -89,7 +89,6 @@ class Module extends BaseClass {
 		let b;
 		if ((b = options.bind)) {
 			b = (typeof b === 'string') ? b : name;
-			console.log('B', b)
 			this[b] = mod;
 		}
 
