@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.Ext.js 0.2.14
+ * JaffaMVC.Ext.js 0.2.15
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.

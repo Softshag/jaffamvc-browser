@@ -4,7 +4,7 @@
     elm.extend = Backbone.extend
    });
 
-  JaffaMVC.ajax = ajax();
+  Backbone.ajax = JaffaMVC.ajax = ajax();
 
   utils.assign(JaffaMVC, {
     Application: Application,
