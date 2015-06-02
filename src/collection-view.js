@@ -152,9 +152,11 @@ class CollectionView extends View {
   showEmptyView () {
     let EmptyView = this.getOption('emptyView');
 
-    if (!EmptyView || this._emptyView)
-      return
-
+    if (!EmptyView || this._emptyView) {
+      if (this._emptyView)
+        this._container.appendChild(this._emptyView.render().el);
+      return;
+    }
     let view = this._emptyView = new EmptyView({
       model: this.model,
       collection: this.collection
@@ -325,7 +327,7 @@ class CollectionView extends View {
     this.triggerMethod('before:destroy:children');
     this.destroyChildren();
     this.triggerMethod('destroy:children');
-
+    if (this._emptyView) this.hideEmptyView();
     return super.destroy();
 
   }

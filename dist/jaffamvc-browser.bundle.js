@@ -1,5 +1,5 @@
 /*!
- * JaffaMVC.js 0.2.15
+ * JaffaMVC.js 0.2.16
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
@@ -36,7 +36,7 @@
 
   var JaffaMVC = {};
 
-  JaffaMVC.version = "0.2.15";
+  JaffaMVC.version = "0.2.16";
   JaffaMVC.Debug = false;
 
 
@@ -2255,6 +2255,7 @@
       var EmptyView = this.getOption("emptyView");
 
       if (!EmptyView || this._emptyView) {
+        if (this._emptyView) this._container.appendChild(this._emptyView.render().el);
         return;
       }
       var view = this._emptyView = new EmptyView({
@@ -2430,7 +2431,7 @@
       this.triggerMethod("before:destroy:children");
       this.destroyChildren();
       this.triggerMethod("destroy:children");
-
+      if (this._emptyView) this.hideEmptyView();
       return _View2.prototype.destroy.call(this);
     };
 
@@ -2788,7 +2789,7 @@
 }));
 
 /*!
- * JaffaMVC.Ext.js 0.2.15
+ * JaffaMVC.Ext.js 0.2.16
  * (c) 2015 Rasmus Kildevæld, Softshag.
  * Inspired and based on Backbone.Marionette.js
  * (c) 2014 Derick Bailey, Muted Solutions, LLC.
